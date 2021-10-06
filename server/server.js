@@ -1,9 +1,16 @@
-const {MongoClient} = require('mongodb')
+const {MongoClient} = require('mongodb');
+
+const http = require('http');
+const app = require('./app');
+
+const port = process.env.PORT || 3000;
+const server = http.createServer(app);
+
+server.listen(port);
 
 async function main() {
 
     const uri = "mongodb+srv://mainDbUser:dw1SN5SPRhwk7yhZ@cluster0.rjaow.mongodb.net/uniduti?retryWrites=true&w=majority"
-
     const client = new MongoClient(uri);
 
     try {

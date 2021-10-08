@@ -1,4 +1,7 @@
+/*
 const {MongoClient} = require('mongodb');
+
+const uri = "mongodb+srv://mainDbUser:dw1SN5SPRhwk7yhZ@cluster0.rjaow.mongodb.net/uniduti?retryWrites=true&w=majority"
 
 const http = require('http');
 const app = require('./app');
@@ -8,9 +11,9 @@ const server = http.createServer(app);
 
 server.listen(port);
 
+
 async function main() {
 
-    const uri = "mongodb+srv://mainDbUser:dw1SN5SPRhwk7yhZ@cluster0.rjaow.mongodb.net/uniduti?retryWrites=true&w=majority"
     const client = new MongoClient(uri);
 
     try {
@@ -29,4 +32,9 @@ async function main() {
     }
 }
 
+
+
+
+
 main().catch(console.dir);
+*/

@@ -23,8 +23,13 @@ router.get('/:description', (req, res, next) => {
 
 // POST method
 router.post('/', (req, res, next) => {
+    const task = {
+        name: req.body.name,
+        description: req.body.description
+    };
     res.status(201).json({
-        message: 'Handling POST requests to /tasks'
+        message: 'Handling POST requests to /tasks',
+        createdTask: task
     });
 });
 

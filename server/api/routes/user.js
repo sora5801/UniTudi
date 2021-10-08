@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const usersController = require('../controllers/users-controllers');
+
 // GET method
 router.get('/', (req, res, next) => {
     res.status(200).json({
@@ -15,6 +17,7 @@ router.get('/name', (req, res, next) => {
 });
 
 // POST method
+/*
 router.post('/', (req, res, next) => {
     const user = {
         id: req.body.id,
@@ -27,7 +30,13 @@ router.post('/', (req, res, next) => {
         user: user
     });
 });
+*/
 
+router.post(
+    '/signup',
+    usersController.addUsers
+  );
+  
 
 // PATCH methods
 router.patch('/', (req, res, next) => {

@@ -20,7 +20,7 @@ const Login = () => {
   const [error, setError] = useState();
 
 
-    const [formState, inputHandler] = useForm(
+    const [formState, inputHandler, setFormData] = useForm(
         {
           email: {
             value: "",
@@ -35,7 +35,27 @@ const Login = () => {
       );
 
       const switchModeHandler = () => {
-        setIsLoginMode((prevMode) => !prevMode);
+        if (!isLoginMode) {
+          setFormData(
+            {
+              ...formState.inputs,
+              name: undefined
+            },
+            formState.inputs.email.isValid && formState.inputs.password.isValid
+          );
+        } else {
+          setFormData(
+            {
+              ...formState.inputs,
+              name: {
+                value: '',
+                isValid: false
+              }
+            },
+            false
+          );
+        }
+        setIsLoginMode(prevMode => !prevMode);
       };
     
       const loginSubmitHandler = async event => {
@@ -68,7 +88,7 @@ const Login = () => {
           }
         } else {
           try {
-            const response = await fetch('http://localhost:5000/api/users/signup', {
+            const response = await fetch('http://localhost:5000/user/signup', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -78,7 +98,9 @@ const Login = () => {
                 email: formState.inputs.email.value,
                 password: formState.inputs.password.value
               })
-            });
+            }
+            );
+        
     
             const responseData = await response.json();
             if (!response.ok) {
@@ -92,8 +114,12 @@ const Login = () => {
           }
         }
       };
+
+      console.log(formState);
+      
     
       return (
+        <React.Fragment>
         <Card className="authentication">
           <h2>Login Required</h2>
           <hr />
@@ -135,6 +161,7 @@ const Login = () => {
         SWITCH TO {isLoginMode ? "SIGNUP" : "LOGIN"}
       </Button>
     </Card>
+    </React.Fragment>
       );
 };
 

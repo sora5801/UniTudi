@@ -1,29 +1,37 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
+const User = require('../models/user');
 // GET method
 router.get('/', (req, res, next) => {
     res.status(200).json({
-        message: 'Handling GET requests to /user'
+        message: 'Handling GET requests to /users'
     });
 });
 
 router.get('/name', (req, res, next) => {
     res.status(200).json({
-        message: 'Handling GET requests to /user/name'
+        message: 'Handling GET requests to /users/name'
     });
 });
 
-// POST method
+// POST methods
 router.post('/', (req, res, next) => {
-    const user = {
-        id: req.body.id,
+    const user = new User({
+        id: new mongoose.Types.ObjectId(),
         name: req.body.user_name,
         email: req.body.email,
         password: req.body.password_hash
-    };
+    });
+    user
+    .save()
+    .then(result => {
+        console.log(result);
+    })
+    .catch(err => console.log(err));
     res.status(201).json({
-        message: 'Handling POST requests to /user',
+        message: 'Handling POST requests to /users',
         user: user
     });
 });

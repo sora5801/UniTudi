@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const tasksControllers = require('../controllers/tasks-controllers');
+
 // GET method
 router.get('/', (req, res, next) => {
     res.status(200).json({
@@ -22,6 +24,7 @@ router.get('/:description', (req, res, next) => {
 
 
 // POST method
+/*
 router.post('/', (req, res, next) => {
     const task = {
         name: req.body.name,
@@ -32,6 +35,7 @@ router.post('/', (req, res, next) => {
         createdTask: task
     });
 });
+*/
 
 
 // PATCH methods
@@ -54,16 +58,9 @@ router.patch('/:description', (req, res, next) => {
 });
 
 // DELETE methods
-router.delete('/:name', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted task name!'
-    });
-});
 
-router.delete('/:description', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted task description!'
-    });
-});
+
+router.delete('/:tid', tasksControllers.deleteTask) 
+router.post("/", tasksControllers.createTask)
 
 module.exports = router;

@@ -36,6 +36,8 @@ router.post(
     '/signup',
     usersController.addUsers
   );
+
+  router.post("/login", usersController.login);
   
 
 // PATCH methods

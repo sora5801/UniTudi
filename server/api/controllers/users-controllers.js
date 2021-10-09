@@ -36,7 +36,7 @@ const addUsers = async (req, res, next) => {
 
   if (existingUser) {
     const error = new HttpError(
-      "You already have an account, please login instead.",
+      "User exists already, please login instead.",
       422
     );
     return next(error);
@@ -52,7 +52,6 @@ const addUsers = async (req, res, next) => {
     );
     return next(error);
   }
-
   
   const addedUser = new Users({
     name: req.body.name,
@@ -60,8 +59,6 @@ const addUsers = async (req, res, next) => {
     password: hashedPassword, 
     projects: [],
   });
-
-
 
   try {
     await addedUser.save();
@@ -91,19 +88,19 @@ const userLogin = async (req, res, next) => {
 
   if (!existingEmail) {
     const error = new HttpError(
-      "Invalid email or password, please try again.",
+      "Invalid credentials, could not log you in.",
       401
     );
     return next(error);
   }
 
   // Check if the password is valid
-  let isValidPassword;
+  let isValidPassword = false;
   try {
     isValidPassword = await bcrypt.compare(req.body.password, existingEmail.password);
   } catch(err) {
     const error = new HttpError(
-      "Failed logging you in, please try again.",
+      "Could not log you in, please check your credentials and try again.",
       500
     );
     return next(error);

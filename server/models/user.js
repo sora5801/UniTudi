@@ -1,16 +1,12 @@
-const { Int32, Double } = require('bson');
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-    name: { type: String, required: true} ,
-    email: { type: String, required: true}, 
-    password: { type: String, required: true},
-    major: { type: String, required: false},
-    graduationDate: { type: Date, required: false},
-    avaliableHours: { type: Number, required: false},
+const usersSchema = new Schema({
+    name: {type: String, required: true},
+    email: {type: String, required: true}, 
+    password: {type: String, required: true}, 
     tasks: [{type: mongoose.Types.ObjectId, required: true, ref: 'task'}]
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', usersSchema);

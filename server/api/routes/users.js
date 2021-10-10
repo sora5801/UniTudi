@@ -16,11 +16,16 @@ router.get('/name', (req, res, next) => {
     });
 });
 
-// POST method
+// POST methods
 router.post(
     '/signup',
     usersController.addUsers
-  );
+);
+
+router.post(
+    '/login',
+    usersController.userLogin
+);
   
 
 // PATCH methods
@@ -43,16 +48,9 @@ router.patch('/:password', (req, res, next) => {
 });
 
 // DELETE methods
-router.delete('/:name', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted user name!'
-    });
-});
-
-router.delete('/:password', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted user password!'
-    });
-});
+router.delete(
+    '/:userId', 
+    usersController.deleteUsers
+);
 
 module.exports = router;

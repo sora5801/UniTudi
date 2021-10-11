@@ -29,23 +29,16 @@ router.post(
   
 
 // PATCH methods
-router.patch('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Updated!'
-    });
-});
+router.patch(
+    '/:userId/name', 
+    usersController.updateUserName
+);
 
-router.patch('/:name', (req, res, next) => {
-    res.status(200).json({
-        message: 'Updated name!'
-    });
-});
+router.patch(
+    '/:userId/email',
+    usersController.updateUserEmail
+);
 
-router.patch('/:password', (req, res, next) => {
-    res.status(200).json({
-        message: 'Updated password!'
-    });
-});
 
 // DELETE methods
 router.delete(

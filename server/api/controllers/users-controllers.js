@@ -110,9 +110,40 @@ const userLogin = async (req, res, next) => {
   res.json({ message: "Logged in!" });
 };
 
+/* Update user's email method */
+const updateUserName = async (req, res, next) => {
+  let userId;
+  try {
+    userId = await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { name: req.body.name } });
+  } catch(err) {
+    const error = new HttpError(
+      "Failed updating the username.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({ message: "Username updated!" });
+};
+
+/* Update user's email method */
+const updateUserEmail = async (req, res, next) => {
+  let userId;
+  try {
+    userId = await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { email: req.body.email } });
+  } catch (err) {
+    const error = new HttpError(
+      "Failed finding the user's email address.",
+      500
+    );
+    return next(error)
+  }
+
+  res.json({ message: "User email updated!" });
+};
+
 /* Delete accounts method */
 const deleteUsers = async (req, res, next) => {
-  console.log("executing deleteUsers function");
   let existingUserId;
   try {
     existingUserId = await Users.findByIdAndRemove({ _id: req.params.userId });
@@ -130,4 +161,6 @@ const deleteUsers = async (req, res, next) => {
 
 exports.addUsers = addUsers;
 exports.userLogin = userLogin;
+exports.updateUserName = updateUserName;
+exports.updateUserEmail = updateUserEmail;
 exports.deleteUsers = deleteUsers;

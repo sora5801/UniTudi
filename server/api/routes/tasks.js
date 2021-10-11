@@ -23,6 +23,20 @@ router.get('/:description', (req, res, next) => {
 
 // POST method
 router.post('/', (req, res, next) => {
+    // return 201 and upload data
+    const { MongoClient } = require('mongodb');
+    const uri = "mongodb+srv://mainDbUser:dw1SN5SPRhwk7yhZ@cluster0.rjaow.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+    MongoClient.connect(uri, function(err, db){
+        if (err) throw err;
+        var db_client = db.db("uniduti");
+        var myobj = { user_name: "3xuser", task_name: "go to dentist" };
+        db_client.collection("tasks").insertOne(myobj, function(err, res){
+            if (err) throw err;
+            console.log("task insert successful");
+            db.close();
+        })
+    }) 
+
     const task = {
         name: req.body.name,
         description: req.body.description

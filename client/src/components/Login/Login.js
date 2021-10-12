@@ -1,4 +1,4 @@
-import React, {useState, useContext, createContext} from "react";
+import React, {useState, useContext} from "react";
 
 import "./Login.css";
 import Card from "../UI/Card";
@@ -6,12 +6,9 @@ import Input from "../UI/Input";
 import Button from "../UI/Button";
 import { VALIDATOR_EMAIL, VALIDATOR_MINLENGTH , VALIDATOR_REQUIRE} from "../../Utility/validator";
 import { useForm } from "../../customHooks/form-hook";
-
-const AuthContext = createContext({
-    isLoggedIn: false,
-    login: () => {},
-    logout: () => {}
-  });
+import ErrorModal from "../UI/ErrorModal";
+import LoadingSpinner from "../UI/LoadingSpinner";
+import { AuthContext } from "../context/auth-context";
 
 const Login = () => {
     const auth=useContext(AuthContext);
@@ -115,12 +112,17 @@ const Login = () => {
         }
       };
 
-      console.log(formState);
+      const errorHandler = () => {
+        setError(null);
+      };
+      
       
     
       return (
         <React.Fragment>
+          <ErrorModal error = {error} onClear={errorHandler}/>
         <Card className="authentication">
+        {isLoading && <LoadingSpinner asOverlay />}
           <h2>Login Required</h2>
           <hr />
           <form onSubmit={loginSubmitHandler}>

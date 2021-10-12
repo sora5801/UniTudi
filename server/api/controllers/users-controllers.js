@@ -106,23 +106,6 @@ const login = async (req, res, next) => {
   res.json({ message: "Logged in!" });
 };
 
-/*
-    try {
-    
-    }catch (err){
-      const error = new HttpError ('Invalid credentials2, could not log you in.', 401);
-      return next(error);
-    }
-    
-   
-    
-
-    if (!existingUser || hashedPassword) {
-      const error = new HttpError ('Invalid credentials, could not log you in.', 401);
-      return next(error);
-      
-  }
-  */
 
 exports.addUsers = addUsers;
 exports.login = login;

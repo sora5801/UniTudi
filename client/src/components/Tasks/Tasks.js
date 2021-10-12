@@ -1,50 +1,50 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React ,{ useEffect} from 'react';
+import {Checkbox} from './Checkbox';
+import  AddTask  from './AddTask';
+import {useTasks} from './hooks';
+import {getTitle,getCollatedTitle, collatedTasksExist} from './helpers';
+import { useSelectedProjectValue} from './selected-project-context';
+import { useProjectsValue } from './project-context';
 
+const collatedTasks = [
+  {key: 'INBOX', name: 'Inbox'},
+  {key: 'TODAY', name: 'Today'},
+  {key: 'NEXT_7', name: 'Next 7 Days'},
+]
 
-import TaskList from "./components/TaskList";
-import ErrorModal from "../UI/ErrorModal";
-import LoadingSpinner from "../UI/LoadingSpinner";
-import { useHttpClient } from "../../customHooks/http-hook";
+export const Tasks = () => {
+    const {selectedProject} = useSelectedProjectValue();
+    const {projects} = useProjectsValue();
+    const {tasks} = useTasks(selectedProject);
 
+    let projectName = '';
 
-const Tasks = () => {
-  const [loadedTasks, setLoadedTasks] = useState();
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+    if(projects.length > 0 && selectedProject && !collatedTasksExist(selectedProject)) {
+        projectName = getTitle(projects, selectedProject).name;
+    }
 
-  const userId = useParams().userId;
+    if (collatedTasksExist(selectedProject) && selectedProject) {
+        projectName = getCollatedTitle(collatedTasks, selectedProject).name;
+    }
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/tasks/user/${userId}`
-        );
-        setLoadedTasks(responseData.tasks);
-      } catch (err) {}
-    };
-    fetchTasks();
-  }, [sendRequest, userId]);
+    useEffect(() => {
+            document.title = `${projectName}: Todoist`;
+    });
 
-  const taskDeletedHandler = (deletedTaskId) => {
-    setLoadedTasks((prevTasks) =>
-      prevTasks.filter((task) => task.id !== deletedTaskId)
-    );
-  };
+    return (
+        <div className="tasks" data-testid="tasks">
+          <h2 data-testid="project-name">{projectName}</h2>
+    
+          <ul className="tasks__list">
+            {tasks.map((task) => (
+              <li key={`${task.id}`}>
+                <Checkbox id={task.id} taskDesc={task.task} />
+                <span>{task.task}</span>
+              </li>
+            ))}
+          </ul>
 
-  return (
-    <React.Fragment>
-      <ErrorModal error={error} onclear={clearError} />
-      {isLoading && (
-        <div className="center">
-          <LoadingSpinner />
+          <AddTask />
         </div>
-      )}
-      {!isLoading && loadedTasks && (
-        <TaskList items={loadedTasks} onDeleteTask={taskDeletedHandler} />
-      )}
-    </React.Fragment>
-  );
-};
-
-export default Tasks;
+      );
+    };

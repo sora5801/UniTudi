@@ -5,13 +5,11 @@ import {
   Redirect,
   Switch,
 } from "react-router-dom";
-import Auth from './components/Login/Auth';
+import Login from './components/Login/Login';
+import {Content} from './components/Tasks/Content';
 import MainNavigation from './components/Navigation/MainNavigation';
 import { AuthContext } from "./components/context/auth-context";
-import AddTask from "./components/Tasks/AddTask";
 import UserProfile from "./components/UserProfile/UserProfile";
-import Tasks from "./components/Tasks/Tasks";
-import UpdateTask from "./components/Tasks/UpdateTask";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,14 +24,24 @@ const App = () => {
 
   let routes;
 
+  if(isLoggedIn){
+    routes = (<Switch>
+        <Content />
+    </Switch>);
+  } else {
+    routes = (
+      <Switch>
+        <Route path="/Login" exact>
+          <Login />
+        </Route>
+        <Redirect to="/Login" />
+    </Switch>
+    )
+  }
+
   return (
     <AuthContext.Provider
-    value={{
-      isLoggedIn: isLoggedIn,
-      userId: userId,
-      login: login,
-      logout: logout
-    }}
+      value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
     >
     <Router>
     <MainNavigation />

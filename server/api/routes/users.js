@@ -30,13 +30,8 @@ router.post(
 
 // PATCH methods
 router.patch(
-    '/:userId/name', 
-    usersController.updateUserName
-);
-
-router.patch(
-    '/:userId/email',
-    usersController.updateUserEmail
+    '/:userId',
+    usersController.updateUser
 );
 
 

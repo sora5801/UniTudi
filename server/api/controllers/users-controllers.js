@@ -84,7 +84,7 @@ const userLogin = async (req, res, next) => {
       "Invalid emial or password, please try iy again.",
       401
     );
-    return next(error);s
+    return next(error);
   }
 
   // Check if the password is valid
@@ -111,10 +111,17 @@ const userLogin = async (req, res, next) => {
 };
 
 /* Update user's email method */
-const updateUserName = async (req, res, next) => {
-  let userId;
+const updateUser = async (req, res, next) => {
+  let updatedName = false, updatedEmail = false;
   try {
-    userId = await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { name: req.body.name } });
+    if (req.body.name != undefined) {
+      updatedName = true;
+      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { name: req.body.name } });
+    }
+    if (req.body.email != undefined) {
+      updatedEmail = true;
+      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { email: req.body.email } });
+    }
   } catch(err) {
     const error = new HttpError(
       "Failed updating the username.",
@@ -123,23 +130,15 @@ const updateUserName = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ message: "Username updated!" });
-};
-
-/* Update user's email method */
-const updateUserEmail = async (req, res, next) => {
-  let userId;
-  try {
-    userId = await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { email: req.body.email } });
-  } catch (err) {
-    const error = new HttpError(
-      "Failed finding the user's email address.",
-      500
-    );
-    return next(error)
+  if (updatedName && updatedEmail) {
+    res.json({ message: "Username and email updated!" });
+  } else if (updatedName) {
+    res.json({ message: "Username updated!" });
+  } else if (updatedEmail) {
+    res.json({ message: "Email updated!" });
+  } else {
+    res.json({ message: "No information provided, so no updates were performed." });
   }
-
-  res.json({ message: "User email updated!" });
 };
 
 /* Delete accounts method */
@@ -161,6 +160,5 @@ const deleteUsers = async (req, res, next) => {
 
 exports.addUsers = addUsers;
 exports.userLogin = userLogin;
-exports.updateUserName = updateUserName;
-exports.updateUserEmail = updateUserEmail;
+exports.updateUser = updateUser;
 exports.deleteUsers = deleteUsers;

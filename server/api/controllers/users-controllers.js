@@ -110,7 +110,23 @@ const userLogin = async (req, res, next) => {
   res.json({ message: "Logged in!" });
 };
 
-/* Update user's email method */
+/* Get user info method */
+const getUserInfo = async (req, res, next) => {
+  let userInfo;
+  try {
+    userInfo = await Users.findOne({_id : req.params.userId });
+  } catch(err) {
+    const error = new HttpError(
+      "Failed fetching the user!",
+      500
+    );
+    return next(error);
+  }
+
+  res.json(userInfo)
+}
+
+/* Update username and email address method */
 const updateUser = async (req, res, next) => {
   let updatedName = false, updatedEmail = false;
   try {
@@ -157,7 +173,7 @@ const deleteUsers = async (req, res, next) => {
   res.json({ message: "User deleted." });
 };
 
-
+exports.getUserInfo = getUserInfo;
 exports.addUsers = addUsers;
 exports.userLogin = userLogin;
 exports.updateUser = updateUser;

@@ -4,17 +4,10 @@ const router = express.Router();
 const usersController = require('../controllers/users-controllers');
 
 // GET method
-router.get('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Handling GET requests to /user'
-    });
-});
-
-router.get('/name', (req, res, next) => {
-    res.status(200).json({
-        message: 'Handling GET requests to /user/name'
-    });
-});
+router.get(
+    '/:userId',
+    usersController.getUserInfo
+);
 
 // POST methods
 router.post(
@@ -27,7 +20,6 @@ router.post(
     usersController.userLogin
 );
   
-
 // PATCH methods
 router.patch(
     '/:userId',

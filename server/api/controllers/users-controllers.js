@@ -126,17 +126,29 @@ const getUserInfo = async (req, res, next) => {
   res.json(userInfo)
 }
 
-/* Update username and email address method */
+/* Update user info except password */
 const updateUser = async (req, res, next) => {
-  let updatedName = false, updatedEmail = false;
+  let output = "Updated ";
   try {
     if (req.body.name != undefined) {
-      updatedName = true;
+      output += "name, ";
       await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { name: req.body.name } });
     }
     if (req.body.email != undefined) {
-      updatedEmail = true;
+      output += "email, ";
       await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { email: req.body.email } });
+    }
+    if (req.body.major != undefined) {
+      output += "major, ";
+      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { major: req.body.major } });
+    }
+    if (req.body.graduationDate != undefined) {
+      output += "graduation date, ";
+      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { graduationDate: req.body.graduationDate } });
+    }
+    if (req.body.avaliableHours != undefined) {
+      output += "available hours, ";
+      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { avaliableHours: req.body.avaliableHours } });
     }
   } catch(err) {
     const error = new HttpError(
@@ -146,15 +158,9 @@ const updateUser = async (req, res, next) => {
     return next(error);
   }
 
-  if (updatedName && updatedEmail) {
-    res.json({ message: "Username and email updated!" });
-  } else if (updatedName) {
-    res.json({ message: "Username updated!" });
-  } else if (updatedEmail) {
-    res.json({ message: "Email updated!" });
-  } else {
-    res.json({ message: "No information provided, so no updates were performed." });
-  }
+  output = output.substr(0, output.length - 2);
+  output += '!';
+  res.json({ message: output });
 };
 
 /* Delete accounts method */

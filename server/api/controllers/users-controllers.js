@@ -184,7 +184,7 @@ const getUserTasks = async (req, res, next) => {
     return next(error);
   }
   
-  res.status(201).json(tasks);
+  res.status(200).json(tasks);
 };
 
 /**
@@ -286,4 +286,3 @@ exports.userLogin = userLogin;
 exports.addUserTasks = addUserTasks;
 exports.updateUser = updateUser;
 exports.deleteUsers = deleteUsers;
-// exports.deleteUserTasks = deleteUserTasks;

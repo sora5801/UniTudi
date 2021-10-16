@@ -43,9 +43,4 @@ router.delete(
     usersController.deleteUsers
 );
 
-router.delete(
-    '/:userId/tasks',
-    usersController.deleteUserTasks
-);
-
 module.exports = router;

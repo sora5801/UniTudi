@@ -9,6 +9,11 @@ router.get(
     usersController.getUserInfo
 );
 
+router.get(
+    '/:userId/tasks',
+    usersController.getUserTasks
+);
+
 // POST methods
 router.post(
     '/signup',
@@ -18,6 +23,11 @@ router.post(
 router.post(
     '/login',
     usersController.userLogin
+);
+
+router.post(
+    '/:userId/tasks',
+    usersController.addUserTasks
 );
   
 // PATCH methods
@@ -31,6 +41,11 @@ router.patch(
 router.delete(
     '/:userId', 
     usersController.deleteUsers
+);
+
+router.delete(
+    '/:userId/tasks',
+    usersController.deleteUserTasks
 );
 
 module.exports = router;

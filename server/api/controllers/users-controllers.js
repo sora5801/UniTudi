@@ -8,8 +8,12 @@ const HttpError = require('../../models/http-error');
 const bcrypt = require('bcrypt');
 
 const Users = require('../../models/user');
+const Tasks = require('../../models/task');
 
-/* Signup method */
+
+/**
+ * User signup method
+ */
 const addUsers = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -65,7 +69,9 @@ const addUsers = async (req, res, next) => {
   res.status(201).json({user: addedUser.toObject({ getters: true })});
 };
 
-/* Login method */
+/**
+ * User login method
+ */
 const userLogin = async (req, res, next) => {
   // Check if the user exits
   let exitingEmail;
@@ -110,7 +116,41 @@ const userLogin = async (req, res, next) => {
   res.json({ message: "Logged in!" });
 };
 
-/* Get user info method */
+/**
+ * Add tasks asscoiated with the user
+ * @param {*} req task name and descreprion
+ */
+const addUserTasks = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  let existingUserId = req.params.userId;
+  const addedTask = new Tasks ({
+    name: req.body.name,
+    description: req.body.description,
+    creator: existingUserId
+  });
+
+  try {
+    await addedTask.save();
+    await Users.findOneAndUpdate({ _id: existingUserId }, { $push: { tasks: addedTask._id } });
+  } catch (err) {
+    const error = new HttpError("Failed creating a task!", 500);
+    return next(error);
+  }
+
+  res.status(201).json({ message: "Task created."});
+};
+
+/**
+ * Get user info
+ * @param {*} req userID
+ * @returns users object containing the userID
+ */
 const getUserInfo = async (req, res, next) => {
   let userInfo;
   try {
@@ -123,10 +163,33 @@ const getUserInfo = async (req, res, next) => {
     return next(error);
   }
 
-  res.json(userInfo)
+  res.statis(201).json(userInfo)
 }
 
-/* Update user info except password */
+/**
+ * Get tasks asscoated with the user
+ * @param {*} req userID
+ * @returns array of tasks objects containing the userID
+ */
+const getUserTasks = async (req, res, next) => {
+  let existingUserId = req.params.userId;
+  let tasks = {};
+  try {
+    tasks = await Tasks.find({ creator: existingUserId });
+  } catch(err) {
+    const error = new HttpError(
+      "Failed fetching tasks with the userID!",
+      500
+    );
+    return next(error);
+  }
+  
+  res.status(201).json(tasks);
+};
+
+/**
+ * Update user info
+ */
 const updateUser = async (req, res, next) => {
   let output = "Updated ";
   try {
@@ -137,6 +200,10 @@ const updateUser = async (req, res, next) => {
     if (req.body.email != undefined) {
       output += "email, ";
       await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { email: req.body.email } });
+    }
+    if (req.body.password != undefined) {
+      utput += "passwor, ";
+      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { email: req.body.password } })
     }
     if (req.body.major != undefined) {
       output += "major, ";
@@ -163,7 +230,10 @@ const updateUser = async (req, res, next) => {
   res.json({ message: output });
 };
 
-/* Delete accounts method */
+/**
+ * Delete users
+ * @param {*} req userID
+ */
 const deleteUsers = async (req, res, next) => {
   let existingUserId;
   try {
@@ -179,8 +249,41 @@ const deleteUsers = async (req, res, next) => {
   res.json({ message: "User deleted." });
 };
 
+// /**
+//  * Delete tasks associated with the user
+//  * @param {*} req userID
+//  */
+// const deleteUserTasks = async (req, res, next) => {
+//   let existingUserId = req.params.userId; 
+//   let taskId = req.body._id;
+//   let task;
+
+//   try {
+//     task = await Users.findOne({ _id: existingUserId, task: taskId });
+//   } catch(err) {
+//     const error = new HttpError(
+//       "Invalid",
+//       500
+//     );
+//     return next(error);
+//   }
+
+//   if (!task) {
+//     const error = new HttpError(
+//       "taskId does not exist!",
+//       500
+//     );
+//     return next(error);
+//   }
+
+//   res.json({ message: "Task deleted!"});
+// };
+
 exports.getUserInfo = getUserInfo;
+exports.getUserTasks = getUserTasks;
 exports.addUsers = addUsers;
 exports.userLogin = userLogin;
+exports.addUserTasks = addUserTasks;
 exports.updateUser = updateUser;
 exports.deleteUsers = deleteUsers;
+// exports.deleteUserTasks = deleteUserTasks;

@@ -1,4 +1,4 @@
-.task-form {
+.place-form {
     list-style: none;
     margin: 0 auto;
     padding: 1rem;
@@ -9,6 +9,3 @@
     background: white;
   }
   
-.date{
-  text-align: center;
-}

@@ -57,7 +57,6 @@ const TaskItem = (props) => {
           <div className="task-item__info">
             <h2>{props.name}</h2>
             <p>{props.description}</p>
-            <p>Due date: {props.date}</p>
           </div>
           <div className="task-item__actions">
             {auth.userId === props.creatorId && (

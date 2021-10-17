@@ -5,43 +5,66 @@ import {
   Redirect,
   Switch,
 } from "react-router-dom";
-import Login from './components/Login/Login';
-import {Content} from './components/Tasks/Content';
+import Auth from './components/Login/Auth';
 import MainNavigation from './components/Navigation/MainNavigation';
 import { AuthContext } from "./components/context/auth-context";
+import AddTask from "./components/Tasks/AddTask";
+import Tasks from "./components/Tasks/Tasks";
+import UpdateTask from "./components/Tasks/UpdateTask";
 import UserProfile from "./components/UserProfile/UserProfile";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userId, setUserId] = useState(false);
 
-  const login = useCallback(() => {
+  const login = useCallback(uid => {
     setIsLoggedIn(true);
+    setUserId(uid);
   }, []);
 
   const logout = useCallback(() => {
     setIsLoggedIn(false);
+    setUserId(null);
   }, []);
 
   let routes;
 
   if(isLoggedIn){
     routes = (<Switch>
-        <Content />
+      <Route path="/:userId/tasks" exact>
+          <Tasks/>
+        </Route>
+        <Route path="/tasks/new" exact>
+          <AddTask />
+        </Route>
+        <Route path="/tasks/:taskId">
+          <UpdateTask />
+        </Route>
+        <Redirect to="/tasks/new"/>
     </Switch>);
+     
   } else {
     routes = (
       <Switch>
-        <Route path="/Login" exact>
-          <Login />
+        <Route path="/Auth" exact>
+          <Auth />
         </Route>
-        <Redirect to="/Login" />
+        <Redirect to="/Auth" />
     </Switch>
     )
+    
   }
+
+ 
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
+    value={{
+      isLoggedIn: isLoggedIn,
+      userId: userId,
+      login: login,
+      logout: logout
+    }}
     >
     <Router>
     <MainNavigation />

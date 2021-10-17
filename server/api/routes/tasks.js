@@ -3,8 +3,11 @@ const router = express.Router();
 
 const tasksControllers = require('../controllers/tasks-controllers');
 
+router.get("/user/:uid", tasksControllers.getTasksByUserId);
+router.get('/:tid', tasksControllers.getTaskById);
 
-router.delete('/:tid', tasksControllers.deleteTask) 
-router.post("/", tasksControllers.createTask)
+router.delete('/:tid', tasksControllers.deleteTask); 
+router.post("/", tasksControllers.createTask);
+router.patch('/:tid', tasksControllers.updateTask);
 
 module.exports = router;

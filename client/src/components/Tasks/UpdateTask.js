@@ -6,7 +6,7 @@ import Button from '../UI/Button';
 import Card from '../UI/Card';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
-import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH, VALIDATOR_DATE} from '../../Utility/validator';
+import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH} from '../../Utility/validator';
 import { useForm } from '../../customHooks/form-hook';
 import { useHttpClient } from '../../customHooks/http-hook';
 import { AuthContext } from '../context/auth-context';
@@ -49,10 +49,6 @@ const UpdateTask = () => {
             description: {
               value: responseData.task.description,
               isValid: true
-            },
-            date: {
-              value: responseData.task.date,
-              isValid: true
             }
           },
           true
@@ -71,8 +67,7 @@ const UpdateTask = () => {
         'PATCH',
         JSON.stringify({
           name: formState.inputs.name.value,
-          description: formState.inputs.description.value,
-          date: formState.inputs.date.value
+          description: formState.inputs.description.value
         }),
         {
           'Content-Type': 'application/json'
@@ -126,17 +121,6 @@ const UpdateTask = () => {
             initialValue={loadedTask.description}
             initialValid={true}
           />
-          <Input
-        id="date"
-        element="input"
-        type="text"
-        label="Due Date"
-        validators={[VALIDATOR_DATE()]}
-        errorText="Please enter a valid date (Format is MM/DD/YY and must be after today's date)."
-        onInput={inputHandler}
-        initialValue={loadedTask.date}
-            initialValid={true}
-      />
           <Button type="submit" disabled={!formState.isValid}>
             UPDATE TASK
           </Button>

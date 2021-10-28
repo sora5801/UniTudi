@@ -6,10 +6,11 @@ const HttpError = require('../../models/http-error');
 
 // This is used for password encryption
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 
 const Users = require('../../models/user');
 const Tasks = require('../../models/task');
-
+const Project = require('../../models/project');
 
 /**
  * User signup method
@@ -52,12 +53,15 @@ const addUsers = async (req, res, next) => {
     return next(error);
   }
 
+  
   const addedUser = new Users({
     name: req.body.name,
     email: req.body.email,
     password: hashedPassword, 
-    tasks: [],
+    projects: [],
   });
+
+
 
   try {
     await addedUser.save();

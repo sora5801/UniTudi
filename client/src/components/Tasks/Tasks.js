@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
+
 import TaskList from "./components/TaskList";
 import ErrorModal from "../UI/ErrorModal";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import { useHttpClient } from "../../customHooks/http-hook";
+
 
 const Tasks = () => {
   const [loadedTasks, setLoadedTasks] = useState();
@@ -13,7 +15,7 @@ const Tasks = () => {
   const userId = useParams().userId;
 
   useEffect(() => {
-    const fetchPlaces = async () => {
+    const fetchTasks = async () => {
       try {
         const responseData = await sendRequest(
           `http://localhost:5000/tasks/user/${userId}`
@@ -21,12 +23,12 @@ const Tasks = () => {
         setLoadedTasks(responseData.tasks);
       } catch (err) {}
     };
-    fetchPlaces();
+    fetchTasks();
   }, [sendRequest, userId]);
 
-  const taskDeletedHandler = deletedTaskId => {
-    setLoadedTasks(prevTasks =>
-      prevTasks.filter(task => task.id !== deletedTaskId)
+  const taskDeletedHandler = (deletedTaskId) => {
+    setLoadedTasks((prevTasks) =>
+      prevTasks.filter((task) => task.id !== deletedTaskId)
     );
   };
 
@@ -38,7 +40,9 @@ const Tasks = () => {
           <LoadingSpinner />
         </div>
       )}
-      {!isLoading && loadedTasks && <TaskList items={loadedTasks} onDeleteTask = {taskDeletedHandler}/>}
+      {!isLoading && loadedTasks && (
+        <TaskList items={loadedTasks} onDeleteTask={taskDeletedHandler} />
+      )}
     </React.Fragment>
   );
 };

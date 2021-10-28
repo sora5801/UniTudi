@@ -1,8 +1,10 @@
 const { validationResult } = require("express-validator");
 const HttpError = require("../../models/http-error");
 const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
 
 const Users = require("../../models/user");
+const Project = require('../../models/project');
 
 const addUsers = async (req, res, next) => {
   const errors = validationResult(req);
@@ -43,14 +45,16 @@ const addUsers = async (req, res, next) => {
     const error = new HttpError("Could not create user, please try again", 500);
     return next(error);
   }
-  
 
+  
   const addedUser = new Users({
     name,
     email,
     password: hashedPassword, 
-    tasks: [],
+    projects: [],
   });
+
+
 
   try {
     await addedUser.save();

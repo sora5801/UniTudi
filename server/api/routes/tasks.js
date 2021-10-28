@@ -4,6 +4,7 @@ const router = express.Router();
 const tasksControllers = require('../controllers/tasks-controllers');
 
 router.get("/user/:uid", tasksControllers.getTasksByUserId);
+//router.get("/user/:uid/:pid", tasksControllers.getTasksByUserIdAndProjectId);
 router.get('/:tid', tasksControllers.getTaskById);
 
 router.delete('/:tid', tasksControllers.deleteTask); 

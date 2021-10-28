@@ -3,21 +3,25 @@ import {useHistory} from 'react-router-dom';
 
 import Input from "../UI/Input";
 import Button from "../UI/Button";
-import { VALIDATOR_MINLENGTH , VALIDATOR_REQUIRE} from "../../Utility/validator";
+import { VALIDATOR_MINLENGTH , VALIDATOR_REQUIRE, VALIDATOR_DATE} from "../../Utility/validator";
 import { useForm } from "../../customHooks/form-hook";
 import ErrorModal from "../UI/ErrorModal";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import {useHttpClient} from '../../customHooks/http-hook'
 import { AuthContext } from "../context/auth-context";
+import moment from 'moment';
 import "./AddTask.css";
 
 const AddTask = () => {
+  const current = moment().format("MMM Do YY"); 
+
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [formState, inputHandler] = useForm(
     {
       name: { value: "", isValid: false },
       description: { value: "", isValid: false },
+      date: {value: "", isValid: false}
     },
     false
   );
@@ -33,6 +37,7 @@ const AddTask = () => {
         JSON.stringify({
           name: formState.inputs.name.value,
           description: formState.inputs.description.value,
+          date: formState.inputs.date.value,
           creator: auth.userId,
         }),
         {'Content-Type': 'application/json'}
@@ -44,7 +49,8 @@ const AddTask = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-    <form className="place-form" onSubmit={taskSubmitHandler}>
+      <h3 className="date">Today is {current} </h3>
+    <form className="task-form" onSubmit={taskSubmitHandler}>
       {isLoading && <LoadingSpinner asOverlay/>}
       <Input
         id="name"
@@ -61,6 +67,15 @@ const AddTask = () => {
         label="Description"
         validators={[VALIDATOR_MINLENGTH(5)]}
         errorText="Please enter a valid description (at least 5 characters)."
+        onInput={inputHandler}
+      />
+       <Input
+        id="date"
+        element="input"
+        type="text"
+        label="Due Date(MM/DD/YY)"
+        validators={[VALIDATOR_DATE()]}
+        errorText="Please enter a valid date (Format is MM/DD/YY and must be on or after today's date)."
         onInput={inputHandler}
       />
       <Button type="submit" disabled={!formState.isValid}>

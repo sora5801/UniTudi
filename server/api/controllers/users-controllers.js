@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 
 const Users = require('../../models/user');
 const Tasks = require('../../models/task');
-// const Project = require('../../models/project');
+const Project = require('../../models/project');
 
 /**
  * User signup method
@@ -59,6 +59,8 @@ const addUsers = async (req, res, next) => {
     password: hashedPassword, 
     projects: [],
   });
+
+
 
   try {
     await addedUser.save();

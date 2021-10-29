@@ -9,6 +9,7 @@ import Auth from './components/Login/Auth';
 import MainNavigation from './components/Navigation/MainNavigation';
 import { AuthContext } from "./components/context/auth-context";
 import AddTask from "./components/Tasks/AddTask";
+import UserProfile from "./components/UserProfile/UserProfile";
 import Tasks from "./components/Tasks/Tasks";
 import UpdateTask from "./components/Tasks/UpdateTask";
 
@@ -35,6 +36,9 @@ const App = () => {
         </Route>
         <Route path="/tasks/new" exact>
           <AddTask />
+        </Route>
+        <Route path="/:userId/profile" exact>
+          <UserProfile />
         </Route>
         <Route path="/tasks/:taskId">
           <UpdateTask />

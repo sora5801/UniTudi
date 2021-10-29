@@ -157,13 +157,13 @@ const getUserInfo = async (req, res, next) => {
     userInfo = await Users.findOne({_id : req.params.userId });
   } catch(err) {
     const error = new HttpError(
-      "Failed fetching the user!",
+      `Failed fetching the user with id ${req.params.userId}!`,
       500
     );
     return next(error);
   }
 
-  res.status(201).json(userInfo)
+  res.status(201).json({user: userInfo})
 }
 
 /**

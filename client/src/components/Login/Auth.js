@@ -74,8 +74,10 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(responseData.user.id);
-      } catch (err) {}
+        auth.login(responseData.user._id);
+      } catch (err) {
+        console.log(err);
+      }
     } else {
       try {
         const responseData = await sendRequest(
@@ -90,8 +92,10 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(responseData.user.id);
-      } catch (err) {}
+        auth.login(responseData.user._id);
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 

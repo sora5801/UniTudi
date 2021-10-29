@@ -73,10 +73,10 @@ const addUsers = async (req, res, next) => {
  * User login method
  */
 const userLogin = async (req, res, next) => {
-  // Check if the user exits
-  let exitingEmail;
+  // Check if the user exists
+  let existingEmail;
   try {
-    exitingEmail = await Users.findOne({ email: req.body.email });
+    existingEmail = await Users.findOne({ email: req.body.email });
   } catch(err) {
     const error = new HttpError(
       "Logging in failed, please try again later.",
@@ -85,9 +85,9 @@ const userLogin = async (req, res, next) => {
     return next(error);
   }
 
-  if (!exitingEmail) {
+  if (!existingEmail) {
     const error = new HttpError(
-      "Invalid emial or password, please try iy again.",
+      "Invalid email or password, please try again.",
       401
     );
     return next(error);
@@ -96,7 +96,7 @@ const userLogin = async (req, res, next) => {
   // Check if the password is valid
   let isValidPassword;
   try {
-    isValidPassword = await bcrypt.compare(req.body.password, exitingEmail.password);
+    isValidPassword = await bcrypt.compare(req.body.password, existingEmail.password);
   } catch(err) {
     const error = new HttpError(
       "Failed logging you in, please try again.",
@@ -107,13 +107,13 @@ const userLogin = async (req, res, next) => {
 
   if (!isValidPassword) {
     const error = new HttpError(
-      "Invalid emial or password, please try iy again.",
+      "Invalid email or password, please try again.",
       401
     );
     return next(error);
   }
 
-  res.json({ message: "Logged in!" });
+  res.status(201).json({user: existingEmail});
 };
 
 /**
@@ -163,7 +163,7 @@ const getUserInfo = async (req, res, next) => {
     return next(error);
   }
 
-  res.statis(201).json(userInfo)
+  res.status(201).json(userInfo)
 }
 
 /**
@@ -203,7 +203,7 @@ const updateUser = async (req, res, next) => {
     }
     if (req.body.password != undefined) {
       utput += "passwor, ";
-      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { email: req.body.password } })
+      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { password: req.body.password } })
     }
     if (req.body.major != undefined) {
       output += "major, ";
@@ -227,7 +227,15 @@ const updateUser = async (req, res, next) => {
 
   output = output.substr(0, output.length - 2);
   output += '!';
-  res.json({ message: output });
+  res.json({
+    _id: req.params.userId,
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    major: req.body.major,
+    graduationDate: req.body.graduationDate,
+    avaliableHours: req.body.avaliableHours
+  });
 };
 
 /**

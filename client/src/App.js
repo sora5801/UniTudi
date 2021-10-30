@@ -37,6 +37,10 @@ const App = () => {
         <Route path="/tasks/new" exact>
           <AddTask />
         </Route>
+           <Route path="/:userId/profile" exact>
+          <UserProfile />
+        </Route>
+        
         <Route path="/tasks/:taskId">
           <UpdateTask />
         </Route>

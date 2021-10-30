@@ -8,11 +8,17 @@ import ErrorModal from "../../UI/ErrorModal";
 import LoadingSpinner from "../../UI/LoadingSpinner";
 import { AuthContext } from "../../context/auth-context";
 import { useHttpClient } from "../../../customHooks/http-hook";
+import moment from 'moment';
 
 const TaskItem = (props) => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+ // const [isOverdue, setIsOverdue] = useState(false);
+
+  const isOverdue = () => {
+   return moment(props.date).isBefore();
+  }
 
   const showDeleteWarningHandler = () => {
     setShowConfirmModal(true);
@@ -29,6 +35,7 @@ const TaskItem = (props) => {
       props.onDelete(props.id);
     } catch (err) {}
   };
+
 
   return (
     <React.Fragment>
@@ -55,6 +62,8 @@ const TaskItem = (props) => {
         <Card className="task-item__content">
           {isLoading && <LoadingSpinner asOverlay />}
           <div className="task-item__info">
+            {isOverdue() ? <h3 style={{color:"red"}}> OVERDUE </h3> : ''
+            }
             <h2>{props.name}</h2>
             <p>{props.description}</p>
             <p>Due date: {props.date}</p>
@@ -73,6 +82,7 @@ const TaskItem = (props) => {
       </li>
     </React.Fragment>
   );
+  
 };
 
 export default TaskItem;

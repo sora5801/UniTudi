@@ -7,12 +7,11 @@ const mongoose = require('mongoose');
 app.use(bodyParser.json());
 
 const taskRoutes = require('./api/routes/tasks');
-const userRoutes = require('./api/routes/users');
-// const projectRoutes = require('./api/routes/projects');
+const userRoutes = require('./api/routes/user');
 
 app.use('/tasks', taskRoutes);
-app.use('/users', userRoutes);
-// app.use('/project', projectRoutes);
+app.use('/user', userRoutes);
+
 
 
 app.use((req, res, next) => {

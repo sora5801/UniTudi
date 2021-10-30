@@ -18,8 +18,13 @@ const NavLinks = (props) => {
       <li>
         <NavLink to="/tasks/new">ADD TASKS</NavLink>
       </li>)}
+     
       {!auth.isLoggedIn && (<li>
         <NavLink to="/Auth">LOGIN</NavLink>
+      </li>)}
+      {auth.isLoggedIn && (
+      <li>
+        <NavLink to={`/${auth.userId}/profile`}>MY PROFILE</NavLink>
       </li>)}
       {auth.isLoggedIn && (<li>
           <button onClick={auth.logout}>LOGOUT</button>

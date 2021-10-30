@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt");
 const mongoose = require('mongoose');
 
 const Users = require("../../models/user");
-const Project = require('../../models/project');
 
 const addUsers = async (req, res, next) => {
   const errors = validationResult(req);
@@ -152,7 +151,27 @@ const updateUser = async (req, res, next) => {
   res.status(200).json({ user: user.toObject({ getters: true }) });
 }
 
+/**
+ * Get user info
+ * @param {*} req userID
+ * @returns users object containing the userID
+ */
+ const getUserInfo = async (req, res, next) => {
+  let userInfo;
+  try {
+    userInfo = await Users.findOne({_id : req.params.userId });
+  } catch(err) {
+    const error = new HttpError(
+      `Failed fetching the user with id ${req.params.userId}!`,
+      500
+    );
+    return next(error);
+  }
+
+  res.status(201).json({user: userInfo})
+}
 
 exports.addUsers = addUsers;
 exports.login = login;
 exports.updateUser = updateUser;
+exports.getUserInfo = getUserInfo;

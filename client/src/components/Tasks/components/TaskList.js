@@ -5,7 +5,7 @@ import TaskItem from "./TaskItem";
 import Button from "../../UI/Button";
 import {useHistory, useLocation, useParams} from 'react-router-dom';
 import moment from 'moment';
-import classes from "./TaskList.css";
+import classes from "./TaskList.module.css";
 
 const sortTasks = (tasks, ascending) => {
   return tasks.sort((taskA, taskB) => {

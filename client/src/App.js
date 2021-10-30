@@ -11,7 +11,7 @@ import { AuthContext } from "./components/context/auth-context";
 import AddTask from "./components/Tasks/AddTask";
 import Tasks from "./components/Tasks/Tasks";
 import UpdateTask from "./components/Tasks/UpdateTask";
-
+import UserProfile from "./components/UserProfile/UserProfile";
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState(false);
@@ -36,6 +36,10 @@ const App = () => {
         <Route path="/tasks/new" exact>
           <AddTask />
         </Route>
+           <Route path="/:userId/profile" exact>
+          <UserProfile />
+        </Route>
+        
         <Route path="/tasks/:taskId">
           <UpdateTask />
         </Route>

@@ -31,6 +31,11 @@ const AddTask = () => {
   const taskSubmitHandler = async (event) => {
     event.preventDefault();
     try {
+   //   const formData = new FormData(); 
+   //   formData.append('name', formState.inputs.name.value);
+   //   formData.append('description', formState.inputs.description.value);
+    //  formData.append('date', formState.inputs.date.value);
+    //  formData.append('creator', auth.userId);
       await sendRequest(
         "http://localhost:5000/tasks",
         "POST",
@@ -40,7 +45,8 @@ const AddTask = () => {
           date: formState.inputs.date.value,
           creator: auth.userId,
         }),
-        {'Content-Type': 'application/json'}
+        {'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + auth.token}
       );
       history.push('/' + auth.userId + '/tasks');
     } catch (err) {}

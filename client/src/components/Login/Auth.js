@@ -64,8 +64,8 @@ const Auth = () => {
     if (isLoginMode) {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/user/login",
-          "POST",
+          'http://localhost:5000/user/login',
+          'POST',
           JSON.stringify({
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
@@ -74,13 +74,19 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(responseData.user.id);
+        auth.login(responseData.userId, responseData.token);
       } catch (err) {}
     } else {
       try {
+      //  const formData = new FormData();
+      //  formData.append('name', formState.inputs.name.value);
+      //  formData.append('email', formState.inputs.email.value);
+     //   formData.append('password', formState.inputs.password.value);
         const responseData = await sendRequest(
-          "http://localhost:5000/user/signup",
-          "POST",
+          'http://localhost:5000/user/signup',
+          'POST',
+        //  formData
+          
           JSON.stringify({
             name: formState.inputs.name.value,
             email: formState.inputs.email.value,
@@ -89,8 +95,9 @@ const Auth = () => {
           {
             "Content-Type": "application/json",
           }
+          
         );
-        auth.login(responseData.user.id);
+        auth.login(responseData.userId, responseData.token);
       } catch (err) {}
     }
   };

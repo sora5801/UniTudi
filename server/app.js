@@ -8,11 +8,11 @@ app.use(bodyParser.json());
 
 const taskRoutes = require('./api/routes/tasks');
 const userRoutes = require('./api/routes/users');
-const projectRoutes = require('./api/routes/projects');
+// const projectRoutes = require('./api/routes/projects');
 
 app.use('/tasks', taskRoutes);
 app.use('/users', userRoutes);
-//app.use('/project', projectRoutes);
+// app.use('/project', projectRoutes);
 
 
 app.use((req, res, next) => {

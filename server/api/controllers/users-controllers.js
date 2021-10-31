@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 
 const Users = require('../../models/user');
 const Tasks = require('../../models/task');
-const Project = require('../../models/project');
+// const Project = require('../../models/project');
 
 /**
  * User signup method
@@ -206,8 +206,9 @@ const updateUser = async (req, res, next) => {
       await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { email: req.body.email } });
     }
     if (req.body.password != undefined) {
-      utput += "passwor, ";
-      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { password: req.body.password } })
+      output += "password, ";
+      encrypted_password = await bcrypt.hash(req.body.password, 12);
+      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { password: encrypted_password } })
     }
     if (req.body.major != undefined) {
       output += "major, ";
@@ -217,9 +218,9 @@ const updateUser = async (req, res, next) => {
       output += "graduation date, ";
       await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { graduationDate: req.body.graduationDate } });
     }
-    if (req.body.avaliableHours != undefined) {
+    if (req.body.availableHours != undefined) {
       output += "available hours, ";
-      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { avaliableHours: req.body.avaliableHours } });
+      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { availableHours: req.body.availableHours } });
     }
   } catch(err) {
     const error = new HttpError(
@@ -238,7 +239,7 @@ const updateUser = async (req, res, next) => {
     password: req.body.password,
     major: req.body.major,
     graduationDate: req.body.graduationDate,
-    avaliableHours: req.body.avaliableHours
+    availableHours: req.body.availableHours
   });
 };
 

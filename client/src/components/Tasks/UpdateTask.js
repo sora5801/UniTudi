@@ -75,7 +75,8 @@ const UpdateTask = () => {
           date: formState.inputs.date.value
         }),
         {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + auth.token
         }
       );
       history.push('/' + auth.userId + '/tasks');

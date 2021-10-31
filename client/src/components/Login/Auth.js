@@ -74,12 +74,14 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(responseData.user._id);
-      } catch (err) {
-        console.log(err);
-      }
+        auth.login(responseData.user._id, responseData.token));
+      } catch (err) {}
     } else {
       try {
+      //  const formData = new FormData();
+      //  formData.append('name', formState.inputs.name.value);
+      //  formData.append('email', formState.inputs.email.value);
+     //   formData.append('password', formState.inputs.password.value);
         const responseData = await sendRequest(
           "http://localhost:5000/users/signup",
           "POST",
@@ -91,8 +93,9 @@ const Auth = () => {
           {
             "Content-Type": "application/json",
           }
+          
         );
-        auth.login(responseData.user._id);
+        auth.login(responseData.user._id, responseData.token);
       } catch (err) {}
     }
   };

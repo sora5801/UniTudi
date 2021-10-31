@@ -14,7 +14,6 @@ const TaskItem = (props) => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
- // const [isOverdue, setIsOverdue] = useState(false);
 
   const isOverdue = () => {
    return moment(props.date).isBefore();

@@ -49,9 +49,11 @@ const AddTask = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <h3 className="date">Today is {current} </h3>
+    
+    
     <form className="task-form" onSubmit={taskSubmitHandler}>
       {isLoading && <LoadingSpinner asOverlay/>}
+      <h3 >Today is {current} </h3>
       <Input
         id="name"
         element="input"

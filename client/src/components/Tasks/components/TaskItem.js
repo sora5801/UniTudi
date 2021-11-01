@@ -16,7 +16,7 @@ const TaskItem = (props) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const isOverdue = () => {
-   return moment(props.date).isBefore();
+   return moment(props.date).isBefore((moment(), 'day'));
   }
 
   const showDeleteWarningHandler = () => {

@@ -48,7 +48,7 @@ const User = () => {
             <h3>Password: ******</h3>
             <h3>Avaliable Hours: {loadedUser.availableHours}</h3>
             <h3>Major: {loadedUser.major}</h3>
-            <h3>Graduation Date: {loadedUser.graduationDate}</h3>
+            <h3>Graduation Date: {(new Date(Date.parse(loadedUser.graduationDate))).toLocaleString('en-US', { day: "2-digit", month: "2-digit", year: "2-digit" })}</h3>
             <div className="profile-item__actions">
               <Button to={`/${userId}/edit`}>EDIT</Button>
           </div>

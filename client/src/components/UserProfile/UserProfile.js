@@ -16,6 +16,8 @@ import {
 import { useHttpClient } from "../../customHooks/http-hook";
 import { useForm } from "../../customHooks/form-hook";
 import { AuthContext } from "../context/auth-context";
+import Select from "../UI/Select";
+import { validMajors } from "../../Utility/valid-majors";
 import "./UserProfile.css";
 
 const UserProfile = () => {
@@ -25,8 +27,7 @@ const UserProfile = () => {
   const history = useHistory();
   const userId = useParams().userId;
 
-
-  const [formState, inputHandler, setFormData] = useForm(
+  const [formState, inputHandler, selectHandler, setFormData] = useForm(
     {
       name: { value: "", isValid: false },
       email: { value: "", isValid: false },
@@ -67,12 +68,12 @@ const UserProfile = () => {
     fetchData();
   }, [sendRequest, userId, setFormData]);
 
-  const saveChangesHandler = async event => {
+  const saveChangesHandler = async (event) => {
     event.preventDefault();
     try {
       await sendRequest(
         `http://localhost:5000/user/${userId}`,
-        'PATCH',
+        "PATCH",
         JSON.stringify({
           name: formState.inputs.name.value,
           email: formState.inputs.email.value,
@@ -83,7 +84,7 @@ const UserProfile = () => {
         }),
         { "Content-Type": "application/json" }
       );
-      history.push('/' + auth.userId + '/profile');
+      history.push("/" + auth.userId + "/profile");
       //     setChangesMessage("Your changes were saved successfully!");
     } catch (err) {}
   };
@@ -95,7 +96,6 @@ const UserProfile = () => {
       </div>
     );
   }
-
 
   return (
     <React.Fragment>
@@ -127,7 +127,7 @@ const UserProfile = () => {
             onInput={inputHandler}
             initialValid={true}
           />
-               <Input
+          <Input
             id="password"
             element="input"
             type="text"
@@ -148,16 +148,12 @@ const UserProfile = () => {
             onInput={inputHandler}
             initialValid={true}
           />
-          <Input
+          <Select
             id="major"
-            element="input"
-            type="text"
             label="Major"
-            validators={[VALIDATOR_OPTIONAL_MINLENGTH(1)]}
-            errorText="Please enter a valid major."
+            validValues={validMajors}
             initialValue={loadedUser.major}
-            onInput={inputHandler}
-            initialValid={true}
+            onSelect={selectHandler}
           />
           <Input
             id="graduationDate"
@@ -166,7 +162,7 @@ const UserProfile = () => {
             label="Graduation Date"
             validators={[VALIDATOR_OPTIONAL_DATE()]}
             errorText="Please enter a valid graduation date."
-            initialValue={loadedUser.graduationDate}
+            initialValue={(new Date(Date.parse(loadedUser.graduationDate))).toLocaleString('en-US', { day: "2-digit", month: "2-digit", year: "2-digit" })}
             onInput={inputHandler}
             initialValid={true}
           />

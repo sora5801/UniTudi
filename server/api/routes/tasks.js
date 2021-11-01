@@ -1,83 +1,25 @@
 const express = require('express');
 const router = express.Router();
 
-// GET method
-router.get('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Handling GET requests to /tasks'
-    });
-});
+const tasksController = require('../controllers/tasks-controllers');
 
-router.get('/:name', (req, res, next) => {
-    res.status(200).json({
-        message: 'Handling GET requests to /tasks/name'
-    });
-});
+// GET all tasks function
+router.get('/', tasksController.tasks_getall);
 
-router.get('/:description', (req, res, next) => {
-    res.status(200).json({
-        message: 'Handling GET requests to /tasks/descripton'
-    });
-});
+// Get a task by task num
+router.get('/:num', tasksController.tasks_findById);
+
 
 
 // POST method
-router.post('/', (req, res, next) => {
-    // return 201 and upload data
-    const { MongoClient } = require('mongodb');
-    const uri = "mongodb+srv://mainDbUser:dw1SN5SPRhwk7yhZ@cluster0.rjaow.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-    MongoClient.connect(uri, function(err, db){
-        if (err) throw err;
-        var db_client = db.db("uniduti");
-        var myobj = { user_name: "3xuser", task_name: "go to dentist" };
-        db_client.collection("tasks").insertOne(myobj, function(err, res){
-            if (err) throw err;
-            console.log("task insert successful");
-            db.close();
-        })
-    }) 
-
-    const task = {
-        name: req.body.name,
-        description: req.body.description
-    };
-    res.status(201).json({
-        message: 'Handling POST requests to /tasks',
-        createdTask: task
-    });
-});
+router.post('/', tasksController.tasks_createNew);
 
 
 // PATCH methods
-router.patch('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Updated!'
-    });
-});
+router.patch('/', tasksController.tasks_updateTask );
 
-router.patch('/:name', (req, res, next) => {
-    res.status(200).json({
-        message: 'Updated name!'
-    });
-});
+// DELETE method
+router.delete('/:name', tasksController.tasks_deleteTask);
 
-router.patch('/:description', (req, res, next) => {
-    res.status(200).json({
-        message: 'Handling GET requests to /tasks'
-    });
-});
-
-// DELETE methods
-router.delete('/:name', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted task name!'
-    });
-});
-
-router.delete('/:description', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted task description!'
-    });
-});
 
 module.exports = router;

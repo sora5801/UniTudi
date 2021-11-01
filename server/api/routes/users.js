@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+//const { restart } = require('nodemon');
+//const { request } = require('../../app');
+
+//const User = require('../models/user');
 const usersController = require('../controllers/users-controllers');
 
 // GET method

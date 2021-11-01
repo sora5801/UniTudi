@@ -85,9 +85,26 @@ const UserProfile = () => {
         { "Content-Type": "application/json" }
       );
       history.push("/" + auth.userId + "/profile");
-      //     setChangesMessage("Your changes were saved successfully!");
     } catch (err) {}
   };
+
+  const cancelChangesHandler = () => {
+    history.push("/" + auth.userId + "/profile");
+  }
+
+  const hadChanges = () => {
+    return (
+        (formState.inputs.name.isValid && formState.inputs.name.value !== loadedUser.name) ||
+        (formState.inputs.email.isValid && formState.inputs.email.value !== loadedUser.email) ||
+       (formState.inputs.password.isValid && formState.inputs.password.value !== '') ||
+        (formState.inputs.availableHours.isValid && formState.inputs.availableHours.value !== '' && formState.inputs.availableHours.value !== loadedUser.availableHours) ||
+        (formState.inputs.major.isValid && formState.inputs.major.value !== 'Select a major' && formState.inputs.major.value !== loadedUser.major) ||
+        (formState.inputs.graduationDate.isValid && formState.inputs.graduationDate.value !== '' 
+        && formState.inputs.graduationDate.value !==(new Date(Date.parse(loadedUser.graduationDate))).toLocaleString('en-US', { day: "2-digit", month: "2-digit", year: "2-digit" }))
+    );
+};
+
+console.log(hadChanges());
 
   if (isLoading) {
     return (
@@ -117,10 +134,10 @@ const UserProfile = () => {
             initialValid={true}
           />
           <Input
-            id="email"
-            element="input"
-            type="text"
-            label="Email Address"
+        element="input"
+        id="email"
+        type="email"
+        label="E-Mail"
             validators={[VALIDATOR_EMAIL()]}
             errorText="Please enter a valid email."
             initialValue={loadedUser.email}
@@ -128,10 +145,10 @@ const UserProfile = () => {
             initialValid={true}
           />
           <Input
-            id="password"
-            element="input"
-            type="text"
-            label="Password"
+             element="input"
+             id="password"
+             type="password"
+             label="Password"
             validators={[VALIDATOR_OPTIONAL_MINLENGTH(6)]}
             errorText="Please enter a new valid password, at least 6 characters."
             onInput={inputHandler}
@@ -166,9 +183,12 @@ const UserProfile = () => {
             onInput={inputHandler}
             initialValid={true}
           />
-          <Button type="submit" disabled={!formState.isValid}>
+          <Button type="submit" disabled={!hadChanges()}>
             Save changes
           </Button>
+          <Button inverse onClick={cancelChangesHandler}>
+                Cancel changes
+              </Button>
         </form>
       )}
     </React.Fragment>

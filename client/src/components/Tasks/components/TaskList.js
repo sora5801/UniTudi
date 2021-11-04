@@ -79,7 +79,6 @@ const TaskList = (props) => {
           </React.Fragment>
         }
       >
-        
       {reminderHandler.length > 0 ? <p>Tasks due today: {reminderHandler.map((task => (task.name + ', ')))}</p> : <p>No Tasks due today</p> }
       </Modal>
    <div className={classes.sorting}>

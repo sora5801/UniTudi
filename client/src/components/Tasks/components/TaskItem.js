@@ -9,7 +9,7 @@ import { AuthContext } from "../../context/auth-context";
 import { useHttpClient } from "../../../customHooks/http-hook";
 
 const isOverdue = (due) => {
-  let today = new Date();
+  let today = new Date() + 1;
   return new Date(due.date) < today;
 }
 

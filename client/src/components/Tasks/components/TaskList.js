@@ -22,9 +22,20 @@ const reminder = (tasks) => {
   return tasks.filter((due) => moment(due.date).isSame(moment(), 'day'))
 }
 
+const displayTasks = (tasks, display) => {
+  return tasks.filter((due) => {
+    if(display){
+      return moment(due.date).isAfter(moment(), 'day')
+    } else {
+        return true;
+    }
+  })
+}
+
 const TaskList = (props) => {
   const [showReminderModal, setShowReminderModal] = useState(false);
- // const userId = useParams().userId;
+  const [displayAllTasks, setDisplayAllTasks] = useState(false);
+
 
   const history = useHistory();
   const location = useLocation();
@@ -33,15 +44,27 @@ const TaskList = (props) => {
 
   const isSortingAscending = queryParams.get("sort") === "asc";
 
+  const isAllTasks = queryParams.get("task") === "all";
+
   const sortedTasks = sortTasks(props.items, isSortingAscending);
 
+  const allTasks = displayTasks(props.items, isAllTasks);
+
   const changeSortingHandler = () => {
+    setDisplayAllTasks(false);
     history.push({
       pathname: location.pathname,
       search: `?sort=${(isSortingAscending ? 'desc': 'asc')}`
     })
-  //  history.push(`/${userId}/tasks?sort=` + (isSortingAscending ? 'desc': 'asc'));
   };    
+
+  const changeTasksHandler = () => {
+    setDisplayAllTasks(true);
+    history.push({
+      pathname: location.pathname, 
+      search: `?task=${(isAllTasks ? 'Upcoming': 'all')}`
+    })
+  }
 
   const showReminderHandler = () => {
     setShowReminderModal(true);
@@ -88,9 +111,24 @@ const TaskList = (props) => {
         <button onClick={showReminderHandler}>
           Reminders
         </button>
+        <button onClick={changeTasksHandler}>
+          Show {isAllTasks ? "Upcoming": "All"}
+        </button>
         </div>
+
     <ul className={classes.list}>
-      {sortedTasks.map((task) => (
+      {!displayAllTasks && sortedTasks.map((task) => (
+        <TaskItem
+          key={task.id}
+          id={task.id}
+          name={task.name}
+          description={task.description}
+          date={task.date}
+          creatorId={task.creator}
+          onDelete={props.onDeleteTask}
+        />
+      ))}
+       {displayAllTasks && allTasks.map((task) => (
         <TaskItem
           key={task.id}
           id={task.id}

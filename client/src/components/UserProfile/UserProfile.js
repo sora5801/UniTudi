@@ -1,191 +1,216 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { useParams, useHistory } from "react-router-dom";
 
 import Button from "../UI/Button";
 import ErrorModal from "../UI/ErrorModal";
-import SuccessModal from "../UI/SuccessModal";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import Input from "../UI/Input";
-import Select from "../UI/Select";
-import ChangeAvatar from "./ChangeAvatar";
-import { VALIDATOR_OPTIONAL_MINLENGTH, VALIDATOR_OPTIONAL_HOURS, VALIDATOR_REQUIRE, VALIDATOR_EMAIL, VALIDATOR_OPTIONAL_DATE} from "../../Utility/validator";
-import { validMajors } from "../../Utility/valid-majors";
-import { useParams } from "react-router-dom";
+import UserAvatar from "./ChangeAvatar";
+import { //validate,
+  VALIDATOR_OPTIONAL_MINLENGTH,
+  VALIDATOR_OPTIONAL_HOURS,
+  VALIDATOR_REQUIRE,
+  VALIDATOR_EMAIL,
+  VALIDATOR_OPTIONAL_DATE,
+} from "../../Utility/validator";
 import { useHttpClient } from "../../customHooks/http-hook";
 import { useForm } from "../../customHooks/form-hook";
+import { AuthContext } from "../context/auth-context";
+import Select from "../UI/Select";
+import { validMajors } from "../../Utility/valid-majors";
 import "./UserProfile.css";
 
 const UserProfile = () => {
-    const [loadedUser, setLoadedUser] = useState();
-    const [changesMessage, setChangesMessage] = useState();
-    const { isLoading, error, sendRequest, clearError } = useHttpClient();
-    const userId = useParams().userId;
+  const auth = useContext(AuthContext);
+  const [loadedUser, setLoadedUser] = useState();
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const history = useHistory();
+  const userId = useParams().userId;
 
-    const clearChangesMessage = () => {
-        setChangesMessage(null);
-    };
+  const [formState, inputHandler, selectHandler, setFormData] = useForm(
+    {
+      name: { value: "", isValid: false },
+      email: { value: "", isValid: false },
+      password: { value: "", isValid: false },
+      availableHours: { value: "", isValid: false },
+      major: { value: "", isValid: false },
+      graduationDate: { value: "", isValid: false },
+    },
+    false
+  );
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const responseData = await sendRequest(
-                    `http://localhost:5000/users/${userId}`
-                );
-                responseData.user.graduationDate = (new Date(Date.parse(responseData.user.graduationDate))).toLocaleString('en-US', { day: "2-digit", month: "2-digit", year: "2-digit" });
-                setLoadedUser(responseData.user);
-            } catch(err) {
-                console.log(err);
-            }
-        };
-        fetchData();
-    }, [sendRequest, userId]);
-
-    const [formState, inputHandler, selectHandler] = useForm(
-        {
-            username: { value: (!isLoading && loadedUser ? loadedUser.name : ''), isValid: !isLoading && loadedUser },
-            email_address: { value: !isLoading && loadedUser ? loadedUser.email : '', isValid: !isLoading && loadedUser },
-            password: { value: '', isValid: false },
-            available_hours: { value: isLoading && loadedUser && loadedUser.availableHours ? loadedUser.availableHours : '', isValid: !isLoading && loadedUser },
-            major: { value: isLoading && loadedUser && loadedUser.major ? loadedUser.major : '', isValid: true },
-            graduation_date: { value: isLoading && loadedUser && loadedUser.graduationDate ? loadedUser.graduationDate : '', isValid: !isLoading && loadedUser }
-        },
-        false
-    );
-
-    const hadChanges = () => {
-        return (
-            (formState.inputs.username.isValid && formState.inputs.username.value !== loadedUser.name) ||
-            (formState.inputs.email_address.isValid && formState.inputs.email_address.value !== loadedUser.email) ||
-            (formState.inputs.password.isValid && formState.inputs.password.value !== '') ||
-            (formState.inputs.available_hours.isValid && formState.inputs.available_hours.value !== '' && formState.inputs.available_hours.value !== loadedUser.availableHours) ||
-            (formState.inputs.major.isValid && formState.inputs.major.value !== 'Select a major' && formState.inputs.major.value !== loadedUser.major) ||
-            (formState.inputs.graduation_date.isValid && formState.inputs.graduation_date.value !== '' && formState.inputs.graduation_date.value !== loadedUser.graduationDate)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/user/${userId}`
         );
+        setLoadedUser(responseData.user);
+        setFormData(
+          {
+            name: { value: responseData.user.name, isValid: true },
+            email: { value: responseData.user.email, isValid: true },
+            password: { value: responseData.user.password, isValid: true },
+            availableHours: {
+              value: responseData.user.availableHours,
+              isValid: true,
+            },
+            major: { value: responseData.user.major, isValid: true },
+            graduationDate: {
+              value: responseData.user.graduationDate,
+              isValid: true,
+            },
+          },
+          true
+        );
+      } catch (err) {}
     };
+    fetchData();
+  }, [sendRequest, userId, setFormData]);
 
-    const saveChangesHandler = async (event) => {
-        event.preventDefault();
+  const saveChangesHandler = async (event) => {
+    event.preventDefault();
+    try {
+      await sendRequest(
+        `http://localhost:5000/user/${userId}`,
+        "PATCH",
+        JSON.stringify({
+          name: formState.inputs.name.value,
+          email: formState.inputs.email.value,
+          password: formState.inputs.password.value,
+          availableHours: formState.inputs.availableHours.value,
+          major: formState.inputs.major.value,
+          graduationDate: formState.inputs.graduationDate.value,
+        }),
+        { "Content-Type": "application/json" }
+      );
+      history.push("/" + auth.userId + "/profile");
+    } catch (err) {}
+  };
 
-        var userJSON = {};
-        if (formState.inputs.username.isValid && formState.inputs.username.value !== loadedUser.name) {
-            userJSON['name'] = formState.inputs.username.value;
-            loadedUser.name = formState.inputs.username.value;
-        }
-        if (formState.inputs.email_address.isValid && formState.inputs.email_address.value !== loadedUser.email) {
-            userJSON['email'] = formState.inputs.email_address.value;
-            loadedUser.email = formState.inputs.email_address.value;
-        }
-        if (formState.inputs.password.isValid && formState.inputs.password.value !== '') {
-            userJSON['password'] = formState.inputs.password.value;
-        }
-        if (formState.inputs.available_hours.isValid && formState.inputs.available_hours.value !== '' && formState.inputs.available_hours.value !== loadedUser.availableHours) {
-            userJSON['availableHours'] = formState.inputs.available_hours.value;
-            loadedUser.availableHours = formState.inputs.available_hours.value;
-        }
-        if (formState.inputs.major.isValid && formState.inputs.major.value !== 'Select a major' && formState.inputs.major.value !== loadedUser.major) {
-            userJSON['major'] = formState.inputs.major.value;
-            loadedUser.major = formState.inputs.major.value;
-        }
-        if (formState.inputs.graduation_date.isValid && formState.inputs.graduation_date.value !== '' && formState.inputs.graduation_date.value !== loadedUser.graduationDate) {
-            userJSON['graduationDate'] = formState.inputs.graduation_date.value;
-            loadedUser.graduationDate = formState.inputs.graduation_date.value;
-        }
-        try {
-            await sendRequest(
-                `http://localhost:5000/users/${userId}`,
-                "PATCH",
-                JSON.stringify(userJSON),
-                {"Content-Type": "application/json"}
-            );
-            setChangesMessage("Your changes were saved successfully!");
-        } catch (err) {
-            console.log(err);
-        }
-    };
+  const cancelChangesHandler = () => {
+    history.push("/" + auth.userId + "/profile");
+  }
 
+  const hadChanges = () => {
     return (
-        <React.Fragment>
-        <SuccessModal message={changesMessage} onClear={clearChangesMessage} />
-        <ErrorModal error={error} onclear={clearError} />
-        {isLoading && (
-            <div className="center">
-            <LoadingSpinner />
-            </div>
-        )}
-        {!isLoading && loadedUser &&
-        <form className="profile-form" onSubmit={saveChangesHandler} >
-            <ChangeAvatar size="80" name={loadedUser.name} />
-            <h1>Profile Setting </h1>
-            <hr />
-            <Input
-                id="username"
-                element="input"
-                type="text"
-                label="Username"
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText="Please enter a valid username."
-                placeholder="Enter your name here."
-                initialValue={loadedUser.name}
-                initialValid={true}
-                onInput={inputHandler}
-            />
-            <Input
-                id="email_address"
-                element="input"
-                type="text"
-                label="Email Address"
-                validators={[VALIDATOR_EMAIL()]}
-                errorText="Please enter a valid email."
-                placeholder="Enter your email here."
-                initialValue={loadedUser.email}
-                initialValid={true}
-                onInput={inputHandler}
-            />
-            <Input
-                id="password"
-                element="input"
-                type="text"
-                label="Password"
-                validators={[VALIDATOR_OPTIONAL_MINLENGTH(6)]}
-                errorText="Please enter a new valid password, at least 6 characters."
-                placeholder="Enter your password here."
-                initialValid={true}
-                onInput={inputHandler}
-            />
-            <Input
-                id="available_hours"
-                element="input"
-                type="text"
-                label="Available Hours"
-                validators={[VALIDATOR_OPTIONAL_HOURS()]}
-                errorText="Please enter valid hours from 0 - 23."
-                placeholder="Enter your available hours here."
-                initialValue={loadedUser.availableHours ? loadedUser.availableHours : ''}
-                initialValid={true}
-                onInput={inputHandler}
-            />
-            <Select
-                id="major"
-                label="Major"
-                validValues={validMajors}
-                initialValue={loadedUser.major ? loadedUser.major : validMajors[0].name}
-                onSelect={selectHandler}
-            />
-            <Input
-                id="graduation_date"
-                element="input"
-                type="text"
-                label="Graduation Date"
-                validators={[VALIDATOR_OPTIONAL_DATE()]}
-                errorText="Please enter a valid graduation date."
-                placeholder="Enter your graduation date here."
-                initialValue={loadedUser.graduationDate ? loadedUser.graduationDate : ''}
-                initialValid={true}
-                onInput={inputHandler}
-            />
-            <Button type="submit" disabled={!hadChanges()} >Save changes</Button>
-        </form>}
-        </React.Fragment>
-    )
+        (formState.inputs.name.isValid && formState.inputs.name.value !== loadedUser.name) ||
+        (formState.inputs.email.isValid && formState.inputs.email.value !== loadedUser.email) ||
+       (formState.inputs.password.isValid && formState.inputs.password.value !== '') ||
+        (formState.inputs.availableHours.isValid && formState.inputs.availableHours.value !== '' && formState.inputs.availableHours.value !== loadedUser.availableHours) ||
+        (formState.inputs.major.isValid && formState.inputs.major.value !== 'Select a major' && formState.inputs.major.value !== loadedUser.major) ||
+        (formState.inputs.graduationDate.isValid && formState.inputs.graduationDate.value !== '' 
+        && formState.inputs.graduationDate.value !==(new Date(Date.parse(loadedUser.graduationDate))).toLocaleString('en-US', { day: "2-digit", month: "2-digit", year: "2-digit" }))
+    );
+};
+
+  if (isLoading) {
+    return (
+      <div className="center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  /*
+  Testing the validator approaches because I am a very petty person.
+  var iterations = 1000000;
+  console.time('Function validate with VALIDATOR_OPTIONAL HOURS');
+  for(var i = 0; i < iterations; i++ ){
+   validate(formState.inputs.availableHours, [VALIDATOR_OPTIONAL_HOURS]);
+};
+console.timeEnd('Function validate with VALIDATOR_OPTIONAL HOURS')
+console.time('Function validate with VALIDATOR_REQUIRE');
+  for(var i = 0; i < iterations; i++ ){
+    validate(formState.inputs.name, [VALIDATOR_REQUIRE]);
+};
+console.timeEnd('Function validate with VALIDATOR_REQUIRE')
+console.time('Function validate with VALIDATOR_EMAIL');
+  for(var i = 0; i < iterations; i++ ){
+    validate(formState.inputs.email, [VALIDATOR_EMAIL]);
+};
+console.timeEnd('Function validate with VALIDATOR_EMAIL')
+*/
+
+  return (
+    <React.Fragment>
+      <ErrorModal error={error} onclear={clearError} />
+      {!isLoading && loadedUser && (
+        <form className="profile-form" onSubmit={saveChangesHandler}>
+          <UserAvatar size="80" name={loadedUser.name} />
+          <h1>Profile Setting </h1>
+          <hr />
+          <Input
+            id="name"
+            element="input"
+            type="text"
+            label="Username"
+            validators={[VALIDATOR_REQUIRE()]}
+            errorText="Please enter a valid username."
+            initialValue={loadedUser.name}
+            onInput={inputHandler}
+            initialValid={true}
+          />
+          <Input
+        element="input"
+        id="email"
+        type="email"
+        label="E-Mail"
+            validators={[VALIDATOR_EMAIL()]}
+            errorText="Please enter a valid email."
+            initialValue={loadedUser.email}
+            onInput={inputHandler}
+            initialValid={true}
+          />
+          <Input
+             element="input"
+             id="password"
+             type="password"
+             label="Password"
+            validators={[VALIDATOR_OPTIONAL_MINLENGTH(6)]}
+            errorText="Please enter a new valid password, at least 6 characters."
+            onInput={inputHandler}
+            initialValid={true}
+          />
+          <Input
+            id="availableHours"
+            element="input"
+            type="text"
+            label="Available Hours"
+            validators={[VALIDATOR_OPTIONAL_HOURS()]}
+            errorText="Please enter valid hours from 0 - 23."
+            initialValue={loadedUser.availableHours}
+            onInput={inputHandler}
+            initialValid={true}
+          />
+          <Select
+            id="major"
+            label="Major"
+            validValues={validMajors}
+            initialValue={loadedUser.major}
+            onSelect={selectHandler}
+          />
+          <Input
+            id="graduationDate"
+            element="input"
+            type="text"
+            label="Graduation Date"
+            validators={[VALIDATOR_OPTIONAL_DATE()]}
+            errorText="Please enter a valid graduation date."
+            initialValue={(new Date(Date.parse(loadedUser.graduationDate))).toLocaleString('en-US', { day: "2-digit", month: "2-digit", year: "2-digit" })}
+            onInput={inputHandler}
+            initialValid={true}
+          />
+          <Button type="submit" disabled={!hadChanges()}>
+            Save changes
+          </Button>
+          <Button inverse onClick={cancelChangesHandler}>
+                Cancel changes
+              </Button>
+        </form>
+      )}
+    </React.Fragment>
+  );
 };
 
 export default UserProfile;

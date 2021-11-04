@@ -6,7 +6,7 @@ import ErrorModal from "../UI/ErrorModal";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import Input from "../UI/Input";
 import UserAvatar from "./ChangeAvatar";
-import {
+import { //validate,
   VALIDATOR_OPTIONAL_MINLENGTH,
   VALIDATOR_OPTIONAL_HOURS,
   VALIDATOR_REQUIRE,
@@ -104,8 +104,6 @@ const UserProfile = () => {
     );
 };
 
-console.log(hadChanges());
-
   if (isLoading) {
     return (
       <div className="center">
@@ -113,6 +111,33 @@ console.log(hadChanges());
       </div>
     );
   }
+
+  /*
+  Testing the validator approaches because I am a very petty person.
+
+  var iterations = 1000000;
+  console.time('Function validate with VALIDATOR_OPTIONAL HOURS');
+
+  for(var i = 0; i < iterations; i++ ){
+   validate(formState.inputs.availableHours, [VALIDATOR_OPTIONAL_HOURS]);
+};
+console.timeEnd('Function validate with VALIDATOR_OPTIONAL HOURS')
+
+console.time('Function validate with VALIDATOR_REQUIRE');
+
+  for(var i = 0; i < iterations; i++ ){
+    validate(formState.inputs.name, [VALIDATOR_REQUIRE]);
+};
+console.timeEnd('Function validate with VALIDATOR_REQUIRE')
+
+console.time('Function validate with VALIDATOR_EMAIL');
+
+  for(var i = 0; i < iterations; i++ ){
+    validate(formState.inputs.email, [VALIDATOR_EMAIL]);
+};
+console.timeEnd('Function validate with VALIDATOR_EMAIL')
+
+*/
 
   return (
     <React.Fragment>

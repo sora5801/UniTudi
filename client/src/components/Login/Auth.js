@@ -5,22 +5,25 @@ import Card from "../UI/Card";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
 import {
-  VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
   VALIDATOR_REQUIRE,
+  VALIDATOR_EMAIL,
+
 } from "../../Utility/validator";
 import { useForm } from "../../customHooks/form-hook";
 import ErrorModal from "../UI/ErrorModal";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import { AuthContext } from "../context/auth-context";
 import { useHttpClient } from "../../customHooks/http-hook";
+import Select from "../UI/Select";
+import { validMajors } from "../../Utility/valid-majors";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
-  const [formState, inputHandler, setFormData] = useForm(
+  const [formState, inputHandler, selectHandler, setFormData] = useForm(
     {
       email: {
         value: "",
@@ -138,7 +141,13 @@ const Auth = () => {
             validators={[VALIDATOR_MINLENGTH(6)]}
             errorText="Please enter a valid password, at least 6 characters."
             onInput={inputHandler}
-          />
+          />{!isLoginMode && (
+          <Select
+            id="major"
+            label="Major"
+            validValues={validMajors}
+            onSelect={selectHandler}
+          />)}
           <Button type="submit" disabled={!formState.isValid}>
             {isLoginMode ? "LOGIN" : "SIGNUP"}
           </Button>

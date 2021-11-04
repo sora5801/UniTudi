@@ -1,0 +1,23 @@
+/* Copied from https://github.com/wbinnssmith/react-user-avatar?ref=morioh.com&utm_source=morioh.com
+   under MIT lisence.
+ */
+.UserAvatar {
+  display: inline-block;
+  color: white;
+  float: right;
+}
+
+.UserAvatar--inner {
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.UserAvatar--light {
+  color: gray;
+}
+
+.UserAvatar--light .UserAvatar--inner {
+  border: 1px solid lightgray;
+}

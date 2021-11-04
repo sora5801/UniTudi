@@ -1,20 +1,10 @@
-// Ensure that only the right data makes it into the database
-const { validationResult } = require('express-validator');
+const { validationResult } = require("express-validator");
+const HttpError = require("../../models/http-error");
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
-// Handles http error
-const HttpError = require('../../models/http-error');
+const Users = require("../../models/user");
 
-// This is used for password encryption
-const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
-
-const Users = require('../../models/user');
-const Tasks = require('../../models/task');
-// const Project = require('../../models/project');
-
-/**
- * User signup method
- */
 const addUsers = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -23,12 +13,16 @@ const addUsers = async (req, res, next) => {
     );
   }
 
+  const { name, email, password } = req.body;
+
+
   let existingUser;
+
   try {
-    existingUser = await Users.findOne({ email : req.body.email });
+    existingUser = await Users.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
-      "Signing up failed, please try again later.", 
+      "Signing up failed, please try again later.",
       500
     );
     return next(error);
@@ -36,7 +30,7 @@ const addUsers = async (req, res, next) => {
 
   if (existingUser) {
     const error = new HttpError(
-      "You already have an account, please login instead.",
+      "User exists already, please login instead.",
       422
     );
     return next(error);
@@ -44,24 +38,19 @@ const addUsers = async (req, res, next) => {
 
   let hashedPassword;
   try {
-    hashedPassword = await bcrypt.hash(req.body.password, 12);
+    hashedPassword = await bcrypt.hash(password, 12);
   } catch (err) {
-    const error = new HttpError(
-      "Could not create user, please try again", 
-      500
-    );
+    const error = new HttpError("Could not create user, please try again", 500);
     return next(error);
   }
 
-  
+
   const addedUser = new Users({
-    name: req.body.name,
-    email: req.body.email,
-    password: hashedPassword, 
+    name,
+    email,
+    password: hashedPassword,
     projects: [],
   });
-
-
 
   try {
     await addedUser.save();
@@ -70,18 +59,28 @@ const addUsers = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(201).json({user: addedUser.toObject({ getters: true })});
+    let token;
+    try{
+    token = jwt.sign(
+      { userId: addedUser.id, email: addedUser.email },
+      "supersecret_dont_share",
+      { expiresIn: "1h" }
+    );
+  } catch (err) {
+    const error = new HttpError("Signing up failed, please try again.", 500);
+    return next(error);
+  }
+
+  res.status(201).json({ userId: addedUser.id, email: addedUser.email, token: token});
 };
 
-/**
- * User login method
- */
-const userLogin = async (req, res, next) => {
-  // Check if the user exists
-  let existingEmail;
+const login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  let existingUser;
   try {
-    existingEmail = await Users.findOne({ email: req.body.email });
-  } catch(err) {
+    existingUser = await Users.findOne({ email: email });
+  } catch (err) {
     const error = new HttpError(
       "Logging in failed, please try again later.",
       500
@@ -89,21 +88,20 @@ const userLogin = async (req, res, next) => {
     return next(error);
   }
 
-  if (!existingEmail) {
+  if (!existingUser) {
     const error = new HttpError(
-      "Invalid email or password, please try again.",
+      "Invalid credentials, could not log you in.",
       401
     );
     return next(error);
   }
 
-  // Check if the password is valid
-  let isValidPassword;
+  let isValidPassword = false;
   try {
-    isValidPassword = await bcrypt.compare(req.body.password, existingEmail.password);
-  } catch(err) {
+    isValidPassword = await bcrypt.compare(password, existingUser.password);
+  } catch (err) {
     const error = new HttpError(
-      "Failed logging you in, please try again.",
+      "Could not log you in, please check your credentials and try again .",
       500
     );
     return next(error);
@@ -111,20 +109,32 @@ const userLogin = async (req, res, next) => {
 
   if (!isValidPassword) {
     const error = new HttpError(
-      "Invalid email or password, please try again.",
+      "Invalid credentials, could not log you in.",
       401
     );
     return next(error);
   }
 
-  res.status(201).json({user: existingEmail});
+  let token;
+    try{
+    token = jwt.sign(
+      { userId: existingUser.id, email: existingUser.email },
+      "supersecret_dont_share",
+      { expiresIn: "1h" }
+    );
+  } catch (err) {
+    const error = new HttpError("Logging in failed, please try again.", 500);
+    return next(error);
+  }
+
+  res.json({
+    userId: existingUser.id, 
+    email: existingUser.email,
+    token: token
+  });
 };
 
-/**
- * Add tasks asscoiated with the user
- * @param {*} req task name and descreprion
- */
-const addUserTasks = async (req, res, next) => {
+const updateUser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -132,22 +142,49 @@ const addUserTasks = async (req, res, next) => {
     );
   }
 
-  let existingUserId = req.params.userId;
-  const addedTask = new Tasks ({
-    name: req.body.name,
-    description: req.body.description,
-    creator: existingUserId
-  });
+  const { name, email, password, major, graduationDate, availableHours } =
+    req.body;
+  const userId = req.params.uid;
 
+  let user;
   try {
-    await addedTask.save();
-    await Users.findOneAndUpdate({ _id: existingUserId }, { $push: { tasks: addedTask._id } });
+    user = await Users.findById(userId);
   } catch (err) {
-    const error = new HttpError("Failed creating a task!", 500);
+    const error = new HttpError(
+      "Something went wrong, could not update user.",
+      500
+    );
     return next(error);
   }
 
-  res.status(201).json({ message: "Task created."});
+  user.name = name;
+  user.email = email;
+  if (password === "") {
+    user.password = user.password;
+  } else {
+    user.password = await bcrypt.hash(password, 12);
+  }
+  user.major = major;
+  user.graduationDate = graduationDate;
+  user.availableHours = availableHours;
+
+  try {
+    user.markModified("name");
+    user.markModified("email");
+    user.markModified("major");
+    user.markModified("password");
+    user.markModified("graduationDate");
+    user.markModified("availableHours");
+    await user.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update user.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ user: user.toObject({ getters: true }) });
 };
 
 /**
@@ -158,144 +195,19 @@ const addUserTasks = async (req, res, next) => {
 const getUserInfo = async (req, res, next) => {
   let userInfo;
   try {
-    userInfo = await Users.findOne({_id : req.params.userId });
-  } catch(err) {
+    userInfo = await Users.findOne({ _id: req.params.uid });
+  } catch (err) {
     const error = new HttpError(
-      `Failed fetching the user with id ${req.params.userId}!`,
+      `Failed fetching the user with id ${req.params.uid}!`,
       500
     );
     return next(error);
   }
 
-  res.status(201).json({user: userInfo})
-}
-
-/**
- * Get tasks asscoated with the user
- * @param {*} req userID
- * @returns array of tasks objects containing the userID
- */
-const getUserTasks = async (req, res, next) => {
-  let existingUserId = req.params.userId;
-  let tasks = {};
-  try {
-    tasks = await Tasks.find({ creator: existingUserId });
-  } catch(err) {
-    const error = new HttpError(
-      "Failed fetching tasks with the userID!",
-      500
-    );
-    return next(error);
-  }
-  
-  res.status(200).json(tasks);
+  res.status(201).json({ user: userInfo });
 };
 
-/**
- * Update user info
- */
-const updateUser = async (req, res, next) => {
-  let output = "Updated ";
-  try {
-    if (req.body.name != undefined) {
-      output += "name, ";
-      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { name: req.body.name } });
-    }
-    if (req.body.email != undefined) {
-      output += "email, ";
-      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { email: req.body.email } });
-    }
-    if (req.body.password != undefined) {
-      output += "password, ";
-      encrypted_password = await bcrypt.hash(req.body.password, 12);
-      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { password: encrypted_password } })
-    }
-    if (req.body.major != undefined) {
-      output += "major, ";
-      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { major: req.body.major } });
-    }
-    if (req.body.graduationDate != undefined) {
-      output += "graduation date, ";
-      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { graduationDate: req.body.graduationDate } });
-    }
-    if (req.body.availableHours != undefined) {
-      output += "available hours, ";
-      await Users.findOneAndUpdate({ _id: req.params.userId }, { $set: { availableHours: req.body.availableHours } });
-    }
-  } catch(err) {
-    const error = new HttpError(
-      "Failed updating the username.",
-      500
-    );
-    return next(error);
-  }
-
-  output = output.substr(0, output.length - 2);
-  output += '!';
-  res.json({
-    _id: req.params.userId,
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    major: req.body.major,
-    graduationDate: req.body.graduationDate,
-    availableHours: req.body.availableHours
-  });
-};
-
-/**
- * Delete users
- * @param {*} req userID
- */
-const deleteUsers = async (req, res, next) => {
-  let existingUserId;
-  try {
-    existingUserId = await Users.findByIdAndRemove({ _id: req.params.userId });
-  } catch(err) {
-    const error = new HttpError(
-      "Failed deleting the user",
-      500
-    );
-    return next(error);
-  }
-
-  res.json({ message: "User deleted." });
-};
-
-// /**
-//  * Delete tasks associated with the user
-//  * @param {*} req userID
-//  */
-// const deleteUserTasks = async (req, res, next) => {
-//   let existingUserId = req.params.userId; 
-//   let taskId = req.body._id;
-//   let task;
-
-//   try {
-//     task = await Users.findOne({ _id: existingUserId, task: taskId });
-//   } catch(err) {
-//     const error = new HttpError(
-//       "Invalid",
-//       500
-//     );
-//     return next(error);
-//   }
-
-//   if (!task) {
-//     const error = new HttpError(
-//       "taskId does not exist!",
-//       500
-//     );
-//     return next(error);
-//   }
-
-//   res.json({ message: "Task deleted!"});
-// };
-
-exports.getUserInfo = getUserInfo;
-exports.getUserTasks = getUserTasks;
 exports.addUsers = addUsers;
-exports.userLogin = userLogin;
-exports.addUserTasks = addUserTasks;
+exports.login = login;
 exports.updateUser = updateUser;
-exports.deleteUsers = deleteUsers;
+exports.getUserInfo = getUserInfo;

@@ -1,18 +1,31 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require("cors");
+//const cors = require("cors");
 const app = express();
-app.use(cors());
 const mongoose = require('mongoose');
+//app.use(cors());
 app.use(bodyParser.json());
 
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    );
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+  
+    next();
+  });
+  
+
 const taskRoutes = require('./api/routes/tasks');
-const userRoutes = require('./api/routes/users');
-// const projectRoutes = require('./api/routes/projects');
+const userRoutes = require('./api/routes/user');
+
 
 app.use('/tasks', taskRoutes);
-app.use('/users', userRoutes);
-// app.use('/project', projectRoutes);
+app.use('/user', userRoutes);
+
 
 
 app.use((req, res, next) => {
@@ -36,4 +49,3 @@ mongoose.connect('mongodb+srv://mainDbUser:dw1SN5SPRhwk7yhZ@cluster0.rjaow.mongo
 }).catch(err => {
     console.log(err);
 });
-

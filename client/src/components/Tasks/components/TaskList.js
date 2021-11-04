@@ -1,11 +1,12 @@
-import React from "react";
+import React, {useState} from "react";
 
 import Card from "../../UI/Card";
 import TaskItem from "./TaskItem";
 import Button from "../../UI/Button";
-import {useHistory, useLocation, useParams} from 'react-router-dom';
+import Modal from "../../UI/Modal";
+import {useHistory, useLocation} from 'react-router-dom';
 import moment from 'moment';
-import classes from "./TaskList.css";
+import classes from "./TaskList.module.css";
 
 const sortTasks = (tasks, ascending) => {
   return tasks.sort((taskA, taskB) => {
@@ -17,8 +18,13 @@ const sortTasks = (tasks, ascending) => {
   });
 }
 
+const reminder = (tasks) => {
+  return tasks.filter((due) => moment(due.date).isSame(moment(), 'day'))
+}
+
 const TaskList = (props) => {
-  const userId = useParams().userId;
+  const [showReminderModal, setShowReminderModal] = useState(false);
+ // const userId = useParams().userId;
 
   const history = useHistory();
   const location = useLocation();
@@ -30,8 +36,22 @@ const TaskList = (props) => {
   const sortedTasks = sortTasks(props.items, isSortingAscending);
 
   const changeSortingHandler = () => {
-    history.push(`/${userId}/tasks?sort=` + (isSortingAscending ? 'desc': 'asc'));
-  };
+    history.push({
+      pathname: location.pathname,
+      search: `?sort=${(isSortingAscending ? 'desc': 'asc')}`
+    })
+  //  history.push(`/${userId}/tasks?sort=` + (isSortingAscending ? 'desc': 'asc'));
+  };    
+
+  const showReminderHandler = () => {
+    setShowReminderModal(true);
+  }
+
+  const cancelReminderHandler = () => {
+    setShowReminderModal(false);
+  }
+
+  const reminderHandler = reminder(props.items);
 
   if (props.items.length === 0) {
     return (
@@ -46,9 +66,28 @@ const TaskList = (props) => {
 
   return (
     <React.Fragment>
+       <Modal
+        show={showReminderModal}
+        onCancel={cancelReminderHandler}
+        header="Reminders"
+        footerClass="task-item__modal-actions"
+        footer={
+          <React.Fragment>
+            <Button inverse onClick={cancelReminderHandler}>
+              OKAY
+            </Button>
+          </React.Fragment>
+        }
+      >
+        
+      {reminderHandler.length > 0 ? <p>Tasks due today: {reminderHandler.map((task => (task.name + ', ')))}</p> : <p>No Tasks due today</p> }
+      </Modal>
    <div className={classes.sorting}>
         <button onClick={changeSortingHandler}>
           Sort {isSortingAscending ? "Descending" : "Ascending"}
+        </button>
+        <button onClick={showReminderHandler}>
+          Reminders
         </button>
         </div>
     <ul className={classes.list}>

@@ -5,22 +5,25 @@ import Card from "../UI/Card";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
 import {
-  VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
   VALIDATOR_REQUIRE,
+  VALIDATOR_EMAIL,
+
 } from "../../Utility/validator";
 import { useForm } from "../../customHooks/form-hook";
 import ErrorModal from "../UI/ErrorModal";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import { AuthContext } from "../context/auth-context";
 import { useHttpClient } from "../../customHooks/http-hook";
+import Select from "../UI/Select";
+import { validMajors } from "../../Utility/valid-majors";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
-  const [formState, inputHandler, setFormData] = useForm(
+  const [formState, inputHandler, selectHandler, setFormData] = useForm(
     {
       email: {
         value: "",
@@ -64,8 +67,8 @@ const Auth = () => {
     if (isLoginMode) {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/users/login",
-          "POST",
+          'http://localhost:5000/user/login',
+          'POST',
           JSON.stringify({
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
@@ -74,15 +77,19 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(responseData.user._id);
-      } catch (err) {
-        console.log(err);
-      }
+        auth.login(responseData.userId, responseData.token);
+      } catch (err) {}
     } else {
       try {
+      //  const formData = new FormData();
+      //  formData.append('name', formState.inputs.name.value);
+      //  formData.append('email', formState.inputs.email.value);
+     //   formData.append('password', formState.inputs.password.value);
         const responseData = await sendRequest(
-          "http://localhost:5000/users/signup",
-          "POST",
+          'http://localhost:5000/user/signup',
+          'POST',
+        //  formData
+          
           JSON.stringify({
             name: formState.inputs.name.value,
             email: formState.inputs.email.value,
@@ -91,11 +98,10 @@ const Auth = () => {
           {
             "Content-Type": "application/json",
           }
+          
         );
-        auth.login(responseData.user._id);
-      } catch (err) {
-        console.log(err);
-      }
+        auth.login(responseData.userId, responseData.token);
+      } catch (err) {}
     }
   };
 
@@ -135,7 +141,13 @@ const Auth = () => {
             validators={[VALIDATOR_MINLENGTH(6)]}
             errorText="Please enter a valid password, at least 6 characters."
             onInput={inputHandler}
-          />
+          />{!isLoginMode && (
+          <Select
+            id="major"
+            label="Major"
+            validValues={validMajors}
+            onSelect={selectHandler}
+          />)}
           <Button type="submit" disabled={!formState.isValid}>
             {isLoginMode ? "LOGIN" : "SIGNUP"}
           </Button>

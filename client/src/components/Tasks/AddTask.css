@@ -1,14 +1,25 @@
 .task-form {
-    list-style: none;
-    margin: 0 auto;
-    padding: 1rem;
-    width: 90%;
-    max-width: 40rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-    border-radius: 6px;
-    background: white;
-  }
-  
+  list-style: none;
+  margin: 0 auto;
+  padding: 1rem;
+  width: 90%;
+  max-width: 40rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  border-radius: 6px;
+  background: white;
+}
+
 .date{
-  text-align: center;
+text-align: center;
+}
+
+.date-form {
+list-style: none;
+margin: 0 auto;
+padding: 1rem;
+width: 70%;
+max-width: 40rem;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+border-radius: 5px;
+background: white;
 }

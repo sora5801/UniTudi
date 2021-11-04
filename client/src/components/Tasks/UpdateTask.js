@@ -21,11 +21,15 @@ const UpdateTask = () => {
 
   const [formState, inputHandler, setFormData] = useForm(
     {
-      title: {
+      name: {
         value: '',
         isValid: false
       },
       description: {
+        value: '',
+        isValid: false
+      },
+      date: {
         value: '',
         isValid: false
       }
@@ -75,12 +79,25 @@ const UpdateTask = () => {
           date: formState.inputs.date.value
         }),
         {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+      //    Authorization: 'Bearer ' + auth.token
         }
       );
       history.push('/' + auth.userId + '/tasks');
     } catch (err) {}
   };
+
+  const hadChanges = () => {
+    return (
+        (formState.inputs.name.isValid && formState.inputs.name.value !== loadedTask.name) ||
+        (formState.inputs.description.isValid && formState.inputs.description.value !== loadedTask.description) ||
+       (formState.inputs.date.isValid && formState.inputs.date.value !== loadedTask.date) 
+    );
+};
+
+  const cancelChangesHandler = () => {
+    history.push("/" + auth.userId + "/tasks");
+  }
 
   if (isLoading) {
     return (
@@ -137,9 +154,12 @@ const UpdateTask = () => {
         initialValue={loadedTask.date}
             initialValid={true}
       />
-          <Button type="submit" disabled={!formState.isValid}>
+          <Button type="submit" disabled={!hadChanges()}>
             UPDATE TASK
           </Button>
+          <Button inverse onClick={cancelChangesHandler}>
+                Cancel changes
+              </Button>
         </form>
       )}
     </React.Fragment>

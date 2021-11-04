@@ -6,7 +6,7 @@ import SuccessModal from "../UI/SuccessModal";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import Input from "../UI/Input";
 import Select from "../UI/Select";
-import ChangeAvater from "./ChangeAvater";
+import ChangeAvatar from "./ChangeAvatar";
 import { VALIDATOR_OPTIONAL_MINLENGTH, VALIDATOR_OPTIONAL_HOURS, VALIDATOR_REQUIRE, VALIDATOR_EMAIL, VALIDATOR_OPTIONAL_DATE} from "../../Utility/validator";
 import { validMajors } from "../../Utility/valid-majors";
 import { useParams } from "react-router-dom";
@@ -113,7 +113,7 @@ const UserProfile = () => {
         )}
         {!isLoading && loadedUser &&
         <form className="profile-form" onSubmit={saveChangesHandler} >
-            <ChangeAvater size="80" name={loadedUser.name} />
+            <ChangeAvatar size="80" name={loadedUser.name} />
             <h1>Profile Setting </h1>
             <hr />
             <Input

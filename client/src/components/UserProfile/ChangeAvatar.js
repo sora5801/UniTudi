@@ -1,7 +1,7 @@
 /* Copied from https://github.com/wbinnssmith/react-user-avatar?ref=morioh.com&utm_source=morioh.com
    under MIT lisence.
  */
-import "./ChangeAvater.css";
+import "./ChangeAvatar.css";
 
 const React = require('react');
 const initials = require('initials');

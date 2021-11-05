@@ -134,7 +134,7 @@ console.timeEnd('Function validate with VALIDATOR_EMAIL')
 
   return (
     <React.Fragment>
-      <ErrorModal error={error} onclear={clearError} />
+      <ErrorModal error={error} onClear={clearError} />
       {!isLoading && loadedUser && (
         <form className="profile-form" onSubmit={saveChangesHandler}>
           <UserAvatar size="80" name={loadedUser.name} />

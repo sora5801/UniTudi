@@ -45,8 +45,8 @@ const getTasksByUserId = async (req, res, next) => {
 
   if (!userWithTasks || userWithTasks.tasks.length === 0) {
     return next(
-      new HttpError("Could not find tasks for the provided User id."),
-      404
+      new HttpError("Could not find tasks for the provided User id.", 404)
+      
     );
   }
 

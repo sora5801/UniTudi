@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import {useHistory} from 'react-router-dom';
 
 import Input from "../UI/Input";
@@ -10,9 +10,12 @@ import LoadingSpinner from "../UI/LoadingSpinner";
 import {useHttpClient} from '../../customHooks/http-hook'
 import { AuthContext } from "../context/auth-context";
 import moment from 'moment';
+import 'react-calendar/dist/Calendar.css';
+import Calendar from 'react-calendar';
 import "./AddTask.css";
 
 const AddTask = () => {
+  const [date, setDate] = useState(new Date());
   const current = moment().format("MMM Do YY"); 
 
   const auth = useContext(AuthContext);
@@ -56,6 +59,10 @@ const AddTask = () => {
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
     
+    <div class = "center">
+      <Calendar onChange={setDate}
+      value={date} />
+      </div>
     
     <form className="task-form" onSubmit={taskSubmitHandler}>
       {isLoading && <LoadingSpinner asOverlay/>}

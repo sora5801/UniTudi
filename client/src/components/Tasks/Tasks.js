@@ -34,7 +34,7 @@ const Tasks = () => {
 
   return (
     <React.Fragment>
-      <ErrorModal error={error} onclear={clearError} />
+      <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
           <LoadingSpinner />

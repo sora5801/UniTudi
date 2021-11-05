@@ -24,7 +24,7 @@ const AddTask = () => {
     {
       name: { value: "", isValid: false },
       description: { value: "", isValid: false },
-      date: {value: "", isValid: false}
+      date: {value: date, isValid: true}
     },
     false
   );

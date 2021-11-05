@@ -13,7 +13,7 @@ const addUsers = async (req, res, next) => {
     );
   }
 
-  const { name, email, password } = req.body;
+  const { name, email, password, major, graduationDate } = req.body;
 
 
   let existingUser;
@@ -49,6 +49,8 @@ const addUsers = async (req, res, next) => {
     name,
     email,
     password: hashedPassword,
+    major,
+    graduationDate,
     projects: [],
   });
 

@@ -28,7 +28,6 @@ const User = () => {
     };
     fetchData();
   }, [sendRequest, userId]);
-  console.log(userId);
 
   
 

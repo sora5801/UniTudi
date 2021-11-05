@@ -6,7 +6,7 @@ const userSchema = new Schema({
     name: { type: String, required: true} ,
     email: { type: String, required: true}, 
     password: { type: String, required: true},
-    major: { type: String, required: false},
+    major: { type: String, required: true},
     graduationDate: { type: Date, required: false},
     availableHours: { type: Number, required: false},
     tasks: [{type: mongoose.Types.ObjectId, required: true, ref: 'task'}]

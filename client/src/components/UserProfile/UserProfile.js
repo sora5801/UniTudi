@@ -43,7 +43,7 @@ const UserProfile = () => {
     const fetchData = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/user/${userId}`
+          `http://3.14.141.124:5000/user/${userId}`
         );
         setLoadedUser(responseData.user);
         setFormData(
@@ -72,7 +72,7 @@ const UserProfile = () => {
     event.preventDefault();
     try {
       await sendRequest(
-        `http://localhost:5000/user/${userId}`,
+        `http://3.14.141.124:5000/user/${userId}`,
         "PATCH",
         JSON.stringify({
           name: formState.inputs.name.value,

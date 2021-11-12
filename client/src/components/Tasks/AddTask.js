@@ -37,7 +37,7 @@ const AddTask = () => {
     //  formData.append('date', formState.inputs.date.value);
     //  formData.append('creator', auth.userId);
       await sendRequest(
-        "http://localhost:5000/tasks",
+        "http://3.14.141.124:5000/tasks",
         "POST",
         JSON.stringify({
           name: formState.inputs.name.value,

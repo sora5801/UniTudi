@@ -18,7 +18,7 @@ const Tasks = () => {
     const fetchTasks = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/tasks/user/${userId}`
+          `http://3.14.141.124:5000/tasks/user/${userId}`
         );
         setLoadedTasks(responseData.tasks);
       } catch (err) {}

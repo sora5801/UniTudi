@@ -19,7 +19,7 @@ const User = () => {
     const fetchData = async () => {
       try {
         const responseData = await sendRequest(
-            `http://localhost:5000/user/${userId}`
+            `http://3.14.141.124:5000/user/${userId}`
         );
         
         setLoadedUser(responseData.user);

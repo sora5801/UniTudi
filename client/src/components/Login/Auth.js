@@ -67,7 +67,7 @@ const Auth = () => {
     if (isLoginMode) {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/user/login',
+          'http://3.14.141.124:5000/user/login',
           'POST',
           JSON.stringify({
             email: formState.inputs.email.value,
@@ -78,7 +78,9 @@ const Auth = () => {
           }
         );
         auth.login(responseData.userId, responseData.token);
-      } catch (err) {}
+      } catch (err) {
+        console.log(err);
+      }
     } else {
       try {
       //  const formData = new FormData();
@@ -86,7 +88,7 @@ const Auth = () => {
       //  formData.append('email', formState.inputs.email.value);
      //   formData.append('password', formState.inputs.password.value);
         const responseData = await sendRequest(
-          'http://localhost:5000/user/signup',
+          'http://3.14.141.124:5000/user/signup',
           'POST',
         //  formData
           

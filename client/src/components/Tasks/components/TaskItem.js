@@ -20,7 +20,7 @@ const TaskItem = (props) => {
 
   const confirmCompleteHandler = async () => {
     try {
-      await sendRequest(`http://localhost:5000/tasks/${props.id}`, "DELETE");
+      await sendRequest(`http://3.14.141.124:5000/tasks/${props.id}`, "DELETE");
       props.onDelete(props.id);
     } catch (err) {}
   };

@@ -41,7 +41,7 @@ const UpdateTask = () => {
     const fetchPlace = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/tasks/${taskId}`
+          `http://3.14.141.124:5000/tasks/${taskId}`
         );
         setLoadedTask(responseData.task);
         setFormData(
@@ -71,7 +71,7 @@ const UpdateTask = () => {
     event.preventDefault();
     try {
       await sendRequest(
-        `http://localhost:5000/tasks/${taskId}`,
+        `http://3.14.141.124:5000/tasks/${taskId}`,
         'PATCH',
         JSON.stringify({
           name: formState.inputs.name.value,

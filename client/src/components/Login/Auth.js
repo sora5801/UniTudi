@@ -33,10 +33,6 @@ const Auth = () => {
         value: "",
         isValid: false,
       },
-      graduationDate: {
-        value: "",
-        isValid: false,
-      }
     },
     false
   );

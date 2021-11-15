@@ -46,13 +46,11 @@ if [ ! -f "$PEM" ]; then
     die "ERROR: No $PEM file was found in the current directory. Have you copied the .pem file into the current directory?"
 fi
 
-echo "INFO: Removing existing files from server..."
+ssh -qi "$PEM" "$SERVER_ACCESS" "exit 0" &> /dev/null
 
-# Remove existing client files
-ssh -i "$PEM" "$SERVER_ACCESS" "rm -rf client/deploy/*" &> /dev/null
-
-# Remove existing server files
-ssh -i "$PEM" "$SERVER_ACCESS" "rm -rf server/*" &> /dev/null
+if [ $? != 0 ]; then
+    die "ERROR: Could not successfully access ${AWS_SERVER_NAME} using SSH."
+fi
 
 echo "INFO: Updating current main files for use in production..."
 
@@ -69,13 +67,27 @@ sed -i "" "s/require(\"bcrypt\")/require(\"bcryptjs\")/g" server/app.js server/a
 # Replace localhost references with server IP address
 sed -i "" "s/localhost/${AWS_SERVER_IP_ADDRESS}/g" $(grep -rl "localhost" client/src | tr '\n' ' ') &> /dev/null
 
-echo "INFO: Installing, building, and copying files to server..."
+echo "INFO: Installing and building code..."
 
 # Build client and copy build into server
 pushd client/
-npm install &> /dev/null && npm run build &> /dev/null
-scp -rpi "$PEM" build/* "${SERVER_ACCESS}:/home/ubuntu/client/deploy/" &> /dev/null
+if [ ! npm install &> /dev/null && npm run build &> /dev/null ]; then
+    die "ERROR: Could not build client code."
+fi
 popd
+
+echo "INFO: Removing existing files from server..."
+
+# Remove existing client files
+ssh -i "$PEM" "$SERVER_ACCESS" "rm -rf client/deploy/*" &> /dev/null
+
+# Remove existing server files
+ssh -i "$PEM" "$SERVER_ACCESS" "rm -rf server/*" &> /dev/null
+
+echo "INFO: Copying new files to server..."
+
+# Copy built client code to server
+scp -rpi "$PEM" client/build/* "${SERVER_ACCESS}:/home/ubuntu/client/deploy/" &> /dev/null
 
 # Copy server files to server
 scp -rpi "$PEM" server/ "${SERVER_ACCESS}:/home/ubuntu/server/" &> /dev/null

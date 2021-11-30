@@ -17,6 +17,8 @@ import { useAuth } from './customHooks/auth-hook';
 import Welcome from "./components/landingpage/Welcome";
 import {Footer, Blog, Possibility, Features, WhatGP3T, Header} from './containers';
 import {CTA, Brand, Navbar} from './components/landingpage';
+import Header2 from "./containers/header/Header2";
+import Header3  from "./containers/header/Header3";
 
 import './App.css';
 
@@ -57,6 +59,8 @@ const App = () => {
         <div className="gradient_bg">
         <Navbar />
         <Header/>
+        <Header2 />
+        <Header3 />
         </div>
         </div>
         </Route>

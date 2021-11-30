@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../context/auth-context";
+import {Link} from 'react-router-dom';
 
 import "./NavLinks.css";
 
@@ -22,9 +23,10 @@ const NavLinks = (props) => {
       <li>
         <NavLink to={`/${auth.userId}/profile`}>MY PROFILE</NavLink>
       </li>)}
-      {!auth.isLoggedIn && (<li>
-        <NavLink to="/Auth">LOGIN</NavLink>
-      </li>)}
+      {!auth.isLoggedIn && (<div className="gpt3__navbar-sign">
+        <p><Link to={"/Auth"}>Sign in</Link></p>
+        <button type="button">Sign up</button>
+      </div>)}
       {auth.isLoggedIn && (<li>
           <button onClick={auth.logout}>LOGOUT</button>
       </li>)}

@@ -20,12 +20,14 @@ import Select from "../UI/Select";
 import { validMajors } from "../../Utility/valid-majors";
 import "./UserProfile.css";
 
+
 const UserProfile = () => {
   const auth = useContext(AuthContext);
   const [loadedUser, setLoadedUser] = useState();
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const history = useHistory();
   const userId = useParams().userId;
+
 
   const [formState, inputHandler, selectHandler, setFormData] = useForm(
     {
@@ -134,7 +136,7 @@ console.timeEnd('Function validate with VALIDATOR_EMAIL')
 
   return (
     <React.Fragment>
-      <ErrorModal error={error} onclear={clearError} />
+      <ErrorModal error={error} onClear={clearError} />
       {!isLoading && loadedUser && (
         <form className="profile-form" onSubmit={saveChangesHandler}>
           <UserAvatar size="80" name={loadedUser.name} />

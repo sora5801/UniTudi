@@ -11,6 +11,7 @@ const MAX_LENGTH = 'MAX_LENGTH';
 const MIN = 'MIN';
 const MAX = 'MAX';
 const DATE = 'DATE';
+
  
  
 export const VALIDATOR_REQUIRE   =  () => ({ type: REQUIRED });
@@ -25,7 +26,7 @@ export const VALIDATOR_OPTIONAL_MINLENGTH = value => ({
 });
 export const VALIDATOR_OPTIONAL_HOURS =  () => ({ type: OPTIONAL_HOURS });
 export const VALIDATOR_OPTIONAL_DATE =  () => ({type: OPTIONAL_DATE});
-export const VALIDATOR_DATE =  () => ({type: OPTIONAL_DATE});
+export const VALIDATOR_DATE =  () => ({type: DATE});
 
 export const validate = (input, validators) => {
  

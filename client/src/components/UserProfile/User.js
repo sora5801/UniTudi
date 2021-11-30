@@ -35,7 +35,7 @@ const User = () => {
 
   return (
     <React.Fragment>
-        <ErrorModal error={error} onclear={clearError} />
+        <ErrorModal error={error} onClear={clearError} />
         {!isLoading && loadedUser && (
       <li className="task-item">
           {isLoading && <LoadingSpinner asOverlay />}

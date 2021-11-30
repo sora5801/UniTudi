@@ -8,7 +8,7 @@ import {
   VALIDATOR_MINLENGTH,
   VALIDATOR_REQUIRE,
   VALIDATOR_EMAIL,
-
+  VALIDATOR_DATE
 } from "../../Utility/validator";
 import { useForm } from "../../customHooks/form-hook";
 import ErrorModal from "../UI/ErrorModal";
@@ -44,7 +44,7 @@ const Auth = () => {
           ...formState.inputs,
           name: undefined,
         },
-        formState.inputs.email.isValid && formState.inputs.password.isValid
+        formState.inputs.email.isValid && formState.inputs.password.isValid && formState.inputs.graduationDate.isValid
       );
     } else {
       setFormData(
@@ -94,6 +94,8 @@ const Auth = () => {
             name: formState.inputs.name.value,
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
+            major: formState.inputs.major.value,
+            graduationDate: formState.inputs.graduationDate.value,
           }),
           {
             "Content-Type": "application/json",
@@ -108,6 +110,7 @@ const Auth = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
+      <div class = "center">
       <Card className="authentication">
         {isLoading && <LoadingSpinner asOverlay />}
         <h2>Login Required</h2>
@@ -147,6 +150,16 @@ const Auth = () => {
             label="Major"
             validValues={validMajors}
             onSelect={selectHandler}
+          />
+          )}{!isLoginMode && (
+          <Input
+            id="graduationDate"
+            element="input"
+            type="text"
+            label="Graduation Date"
+            validators={[VALIDATOR_DATE()]}
+            errorText="Please enter a valid graduation date."
+            onInput={inputHandler}
           />)}
           <Button type="submit" disabled={!formState.isValid}>
             {isLoginMode ? "LOGIN" : "SIGNUP"}
@@ -156,6 +169,7 @@ const Auth = () => {
           SWITCH TO {isLoginMode ? "SIGNUP" : "LOGIN"}
         </Button>
       </Card>
+      </div>
     </React.Fragment>
   );
 };

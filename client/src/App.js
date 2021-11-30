@@ -14,10 +14,14 @@ import UpdateTask from "./components/Tasks/UpdateTask";
 import User from "./components/UserProfile/User";
 import UserProfile from "./components/UserProfile/UserProfile";
 import { useAuth } from './customHooks/auth-hook';
+import Welcome from "./components/landingpage/Welcome";
+import {Footer, Blog, Possibility, Features, WhatGP3T, Header} from './containers';
+import {CTA, Brand, Navbar} from './components/landingpage';
 
+import './App.css';
 
 const App = () => {
-  const { token, login, logout, userId } = useAuth();
+  const { token, login, logout, userId} = useAuth();
 
 
   let routes;
@@ -25,6 +29,7 @@ const App = () => {
   if (token) {
     routes = (
       <Switch>
+        
         <Route path="/:userId/tasks" exact>
           <Tasks />
         </Route>
@@ -34,7 +39,6 @@ const App = () => {
         <Route path="/:userId/profile" exact>
           <User />
         </Route>
-
         <Route path="/tasks/:taskId">
           <UpdateTask />
         </Route>
@@ -45,10 +49,19 @@ const App = () => {
       </Switch>
     );
   } else {
+
     routes = (
       <Switch>
+        <Route path="/" exact>
+        <div className="App">
+        <div className="gradient_bg">
+        <Navbar />
+        <Header/>
+        </div>
+        </div>
+        </Route>
         <Route path="/Auth" exact>
-          <Auth />
+        <Auth />
         </Route>
         <Redirect to="/Auth" />
       </Switch>
@@ -65,12 +78,63 @@ const App = () => {
         logout: logout,
       }}
     >
+      
       <Router>
-        <MainNavigation />
+      <MainNavigation />
+      <div className="gradient__bg">
         <main>{routes}</main>
+        </div>
       </Router>
+
+      
     </AuthContext.Provider>
   );
 };
 
 export default App;
+
+
+//Will use later
+//<Route path="/Auth" exact>
+//<Auth />
+//</Route>
+//<Redirect to="/Auth" />
+
+
+
+/**
+ * <div className="App">
+        <div className="gradient_bg">
+        <Switch>
+          <Route path="/" exact>
+            <Welcome />
+          </Route>
+        </Switch>
+        <Switch>
+          <Route path="/login" exact>
+            <Auth />
+          </Route>
+        </Switch>
+        </div>
+        <Brand/>
+        <WhatGP3T/>
+        <Features/>
+        <Possibility/>
+        <CTA/>
+        <Blog/>
+        <Footer/>
+      </div>
+ */
+
+      /**
+       *    <Router>
+      <div className="App">
+      <div className="gradient__bg">
+        <Navbar />
+        <Header/>
+        <main>{routes}</main>
+        </div>
+        </div>
+      </Router>
+    </AuthContext.Provider>
+       */

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 400 400">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 40px;
+        fill: #fff;
+        font-family: "Courier New";
+        font-weight: 700;
+      }
+    </style>
+  </defs>
+  <text id="UNITUDI" class="cls-1" x="117" y="178">UNITUDI</text>
+</svg>

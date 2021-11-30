@@ -1,6 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {useHistory} from 'react-router-dom';
-
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import Input from "../UI/Input";
 import Button from "../UI/Button";
 import { VALIDATOR_MINLENGTH , VALIDATOR_REQUIRE, VALIDATOR_DATE} from "../../Utility/validator";
@@ -13,6 +14,7 @@ import moment from 'moment';
 import "./AddTask.css";
 
 const AddTask = () => {
+  const [date, setDate] = useState(new Date());
   const current = moment().format("MMM Do YY"); 
 
   const auth = useContext(AuthContext);
@@ -55,7 +57,10 @@ const AddTask = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-    
+      <div class = "center">
+      <Calendar onChange={setDate}
+      value={date} />
+      </div>
     
     <form className="task-form" onSubmit={taskSubmitHandler}>
       {isLoading && <LoadingSpinner asOverlay/>}

@@ -14,22 +14,14 @@ usage() {
 AWS_SERVER_NAME="$1"
 AWS_SERVER_IP_ADDRESS="$2"
 
-USERNAME="ubuntu"
+UN="ubuntu"
 PEM="unitudi.pem"
 
-SERVER_ACCESS="${USERNAME}@${AWS_SERVER_NAME}"
+SERVER_ACCESS="${UN}@${AWS_SERVER_NAME}"
 
 function die() {
     echo "$*" 1>&2
     exit 1
-}
-
-function pushd() {
-    command pushd "$@" > /dev/null
-}
-
-function popd() {
-    command popd "$@" > /dev/null
 }
 
 if [ -z "$AWS_SERVER_NAME" ]; then
@@ -55,7 +47,9 @@ fi
 echo "INFO: Updating current main files for use in production..."
 
 # Remove existing build components
-rm -rf client/build/ client/node_modules/ &> /dev/null
+rm -rf client/build/ &> /dev/null
+rm -rf client/node_modules/ &> /dev/null
+rm -rf server/node_modules/ &> /dev/null
 
 # Update server dependencies based on issues in Ubuntu
 sed -i "" "s/\"bcrypt\": \"^5.0.1\"/\"bcryptjs\": \"^2.4.3\"/g" server/package.json &> /dev/null
@@ -70,11 +64,14 @@ sed -i "" "s/localhost/${AWS_SERVER_IP_ADDRESS}/g" $(grep -rl "localhost" client
 echo "INFO: Installing and building code..."
 
 # Build client and copy build into server
-pushd client/
-if [ ! npm install &> /dev/null && npm run build &> /dev/null ]; then
+pushd client/ &> /dev/null
+if ! npm install &> /dev/null; then
+    die "ERROR: Could not install client dependencies."
+fi
+if ! npm run build &> /dev/null; then
     die "ERROR: Could not build client code."
 fi
-popd
+popd &> /dev/null
 
 echo "INFO: Removing existing files from server..."
 
@@ -84,13 +81,17 @@ ssh -i "$PEM" "$SERVER_ACCESS" "rm -rf client/deploy/*" &> /dev/null
 # Remove existing server files
 ssh -i "$PEM" "$SERVER_ACCESS" "rm -rf server/*" &> /dev/null
 
-echo "INFO: Copying new files to server..."
+echo "INFO: Copying new client files to server..."
 
 # Copy built client code to server
 scp -rpi "$PEM" client/build/* "${SERVER_ACCESS}:/home/ubuntu/client/deploy/" &> /dev/null
 
+echo "INFO: Copying new server files to server..."
+
 # Copy server files to server
 scp -rpi "$PEM" server/ "${SERVER_ACCESS}:/home/ubuntu/server/" &> /dev/null
+
+echo "INFO: Building server files on server..."
 
 # Build server files on server
 ssh -i "$PEM" "$SERVER_ACCESS" "pushd server/server/ && npm install && popd" &> /dev/null

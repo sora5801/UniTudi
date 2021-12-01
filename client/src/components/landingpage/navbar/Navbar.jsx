@@ -30,11 +30,10 @@ const Navbar = () => {
         <div className="gpt3__navbar-menu_container scale-up-center">
           <div className="gpt3__navbar-menu_container-links">
             <p><a href="#home">Home</a></p>
-            
-            <p><a href="#learn more">What is GPT3?</a></p>
-            <p><a href="#features">Open AI</a></p>
-            <p><a href="#testimonials">Case Studies</a></p>
-            <p><a href="#blog">Library</a></p>
+            <p><a href="#learn more">learn more?</a></p>
+            <p><a href="#features">features</a></p>
+            <p><a href="#testimonials">testimonials</a></p>
+            <p><a href="#blog">blog</a></p>
           </div>
           <div className="gpt3__navbar-menu_container-links-sign">
             <p>Sign in</p>
